@@ -58,7 +58,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T06](T06-calculator.md) | calculator 工具 | L2 | 40 | T05 | done |
 | [T07](T07-toolcall-stream.md) | tool_call 增量解析 | L2 | 15 | T06 | done |
 | [T08](T08-agent-loop.md) | agent loop | L2 | 115 | T07 | done |
-| [T09](T09-cli-loop.md) | CLI 接 loop + 冒烟 | L2 | 10 | T08 | todo |
+| [T09](T09-cli-loop.md) | CLI 接 loop + 冒烟 | L2 | 10 | T08 | done |
 | [T10](T10-guard.md) | 约束层 guard | L3 | 75 | T09 | todo |
 | [T11](T11-read-write.md) | read / write 工具 | L3 | 85 | T10 | todo |
 | [T12](T12-edit.md) | edit 工具（唯一匹配） | L3 | 60 | T11 | todo |
