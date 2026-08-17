@@ -8,10 +8,7 @@ export const write: Tool = {
   description: "Create or overwrite a text file inside the workspace. Parent directories are created automatically.",
   parameters: {
     type: "object",
-    properties: {
-      path: { type: "string", description: "file path relative to the workspace" },
-      content: { type: "string", description: "full file content" },
-    },
+    properties: { path: { type: "string" }, content: { type: "string" } },
     required: ["path", "content"],
   },
   async execute(args, ctx) {
