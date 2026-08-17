@@ -81,7 +81,6 @@ test("sliceBytes splits mid-character and reassembles to identical bytes", () =>
   for (const size of [1, 2, 3, 7]) {
     const parts = sliceBytes(sse, size);
     assert.ok(parts.length > 1);
-    const reassembled = Buffer.from(parts.join(""), "latin1").toString("utf8");
-    assert.equal(reassembled, sse, `size=${size}`);
+    assert.equal(Buffer.concat(parts).toString("utf8"), sse, `size=${size}`);
   }
 });

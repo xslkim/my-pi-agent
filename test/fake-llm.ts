@@ -4,7 +4,7 @@ import http from "node:http";
 // 注意：本文件会被 node --test 当作"文件级测试"执行一遍，所以不得有任何顶层副作用。
 
 export interface FakeScript {
-  chunks: string[]; // 每个元素 = 一次 socket write 的原始字节（latin1 编码，见下）
+  chunks: (string | Buffer)[]; // 每个元素 = 一次 socket write；string 按 UTF-8 写，Buffer 按原字节写
   status?: number; // 默认 200
   headers?: Record<string, string>;
 }
@@ -15,9 +15,9 @@ export interface FakeServer {
   close(): Promise<void>;
 }
 
-// chunks 用 latin1 存取：latin1 对字节无损（1 字符 = 1 字节），这样切片可以切在
-// 多字节 UTF-8 字符的中间，拼回后仍是原字节——正是要测的客户端解码场景。
-// 传入数组 = 每次请求消费一个脚本，耗尽后重复最后一个（多轮 loop / 重试测试用）。
+// 要按任意字节边界分片时（如把多字节 UTF-8 字符切两半），用 Buffer 承载切片——
+// JS 字符串装不下"半个字符"。传入数组 = 每次请求消费一个脚本，耗尽后重复最后一个
+//（多轮 loop / 重试测试用）。
 export async function startFakeLLM(script: FakeScript | FakeScript[]): Promise<FakeServer> {
   const queue = Array.isArray(script) ? script : [script];
   const requests: unknown[] = [];
@@ -46,7 +46,7 @@ export async function startFakeLLM(script: FakeScript | FakeScript[]): Promise<F
       }
       void (async () => {
         for (const chunk of s.chunks) {
-          res.write(Buffer.from(chunk, "latin1"));
+          res.write(chunk);
           await new Promise((r) => setImmediate(r)); // 分开 flush，模拟真实的分批到达
         }
         res.end();
@@ -69,11 +69,11 @@ export async function startFakeLLM(script: FakeScript | FakeScript[]): Promise<F
 }
 
 /** 把一段 SSE 文本按给定字节数切块（可切在多字节字符中间），拼回后与原字节一致。 */
-export function sliceBytes(sse: string, size: number): string[] {
+export function sliceBytes(sse: string, size: number): Buffer[] {
   const buf = Buffer.from(sse, "utf8");
-  const out: string[] = [];
+  const out: Buffer[] = [];
   for (let i = 0; i < buf.length; i += size) {
-    out.push(buf.subarray(i, i + size).toString("latin1"));
+    out.push(buf.subarray(i, i + size));
   }
   return out;
 }
