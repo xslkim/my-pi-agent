@@ -76,7 +76,13 @@ export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent
     },
     { signal: opts.signal },
   );
-  yield* parseSSE(res.body!);
+  // 响应头到手后 undici 的 abort 不会中断已在流转的 body 迭代（实测），
+  // 所以 parseSSE 里要自己检查 signal；finally 里 cancel 顺手掐断连接。
+  try {
+    yield* parseSSE(res.body!, opts.signal);
+  } finally {
+    await res.body!.cancel().catch(() => {});
+  }
 }
 
 // SSE 解析，三个必须做对的点：
@@ -84,12 +90,19 @@ export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent
 // 2) 多字节 UTF-8 可能断在字符中间 —— decode(chunk, { stream: true })
 // 3) finish_reason 与 usage 不在同一块，usage 末块的 choices 是空数组 ——
 //    done 事件必须延迟到 [DONE] 或流结束时才发，否则 usage 永远拿不到
-async function* parseSSE(body: ReadableStream<Uint8Array>): AsyncGenerator<StreamEvent> {
+function abortError(): Error {
+  const e = new Error("This operation was aborted");
+  e.name = "AbortError";
+  return e;
+}
+
+async function* parseSSE(body: ReadableStream<Uint8Array>, signal?: AbortSignal): AsyncGenerator<StreamEvent> {
   const decoder = new TextDecoder();
   let buffer = "";
   let finishReason: string | undefined;
   let usage: Usage | undefined;
   for await (const chunk of body) {
+    if (signal?.aborted) throw abortError();
     buffer += decoder.decode(chunk, { stream: true });
     let idx: number;
     while ((idx = buffer.indexOf("\n\n")) !== -1) {

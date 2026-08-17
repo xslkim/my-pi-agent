@@ -7,6 +7,7 @@ export interface FakeScript {
   chunks: (string | Buffer)[]; // 每个元素 = 一次 socket write；string 按 UTF-8 写，Buffer 按原字节写
   status?: number; // 默认 200
   headers?: Record<string, string>;
+  delayMs?: number; // 两次 write 之间的间隔，用于把流拉长（测中止/超时）
 }
 
 export interface FakeServer {
@@ -48,7 +49,8 @@ export async function startFakeLLM(script: FakeScript | FakeScript[]): Promise<F
         try {
           for (const chunk of s.chunks) {
             res.write(chunk);
-            await new Promise((r) => setImmediate(r)); // 分开 flush，模拟真实的分批到达
+            // 分开 flush 模拟真实分批到达；delayMs 可把流拉长（测中止/超时），默认零开销
+            await new Promise((r) => (s.delayMs ? setTimeout(r, s.delayMs) : setImmediate(r)));
           }
           res.end();
         } catch (err) {
