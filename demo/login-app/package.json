@@ -1,0 +1,10 @@
+{
+  "name": "login-app",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "最小登录应用,仅使用 Node 内置模块,零 npm 依赖",
+  "scripts": {
+    "start": "node server.ts"
+  }
+}
