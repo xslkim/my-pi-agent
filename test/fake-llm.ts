@@ -45,11 +45,15 @@ export async function startFakeLLM(script: FakeScript | FakeScript[]): Promise<F
         return;
       }
       void (async () => {
-        for (const chunk of s.chunks) {
-          res.write(chunk);
-          await new Promise((r) => setImmediate(r)); // 分开 flush，模拟真实的分批到达
+        try {
+          for (const chunk of s.chunks) {
+            res.write(chunk);
+            await new Promise((r) => setImmediate(r)); // 分开 flush，模拟真实的分批到达
+          }
+          res.end();
+        } catch (err) {
+          res.destroy(err as Error); // 脚本出错也必须结束响应，别让客户端挂死
         }
-        res.end();
       })();
     });
   });
