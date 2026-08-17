@@ -63,13 +63,30 @@ async function* parseSSE(body: ReadableStream<Uint8Array>): AsyncGenerator<Strea
       }
       const ev = JSON.parse(payload) as {
         usage?: Usage;
-        choices?: { delta?: { content?: string | null; reasoning_content?: string }; finish_reason?: string }[];
+        choices?: {
+          delta?: {
+            content?: string | null;
+            reasoning_content?: string;
+            tool_calls?: { index: number; id?: string; function?: { name?: string; arguments?: string } }[];
+          };
+          finish_reason?: string;
+        }[];
       };
       if (ev.usage) usage = ev.usage;
       const choice = ev.choices?.[0]; // usage 末块 choices 为 []，这里自然是 undefined
       const delta = choice?.delta;
       if (delta?.content) yield { type: "text", delta: delta.content };
       if (delta?.reasoning_content) yield { type: "thinking", delta: delta.reasoning_content };
+      // 工具调用增量：只有第一片带 id/name，arguments 是字符串碎片——本层只透传，拼接是 loop 的职责
+      for (const tc of delta?.tool_calls ?? []) {
+        yield {
+          type: "tool_call_delta",
+          index: tc.index,
+          ...(tc.id !== undefined ? { id: tc.id } : {}),
+          ...(tc.function?.name !== undefined ? { name: tc.function.name } : {}),
+          ...(tc.function?.arguments !== undefined ? { argsDelta: tc.function.arguments } : {}),
+        };
+      }
       if (choice?.finish_reason) finishReason = choice.finish_reason;
     }
   }
