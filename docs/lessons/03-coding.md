@@ -47,6 +47,10 @@ if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`path escapes 
 
 顺带一个陷阱题：为什么不用 `abs.startsWith(cwd)`？因为 cwd 是 `/work` 时，`/work-evil/secret` 也能通过。**字符串前缀不等于路径包含。**
 
+`path.relative` 挡得住 `..`，但挡不住软链：工作目录里一个指向外部的符号链接，能让上面所有检查全部失效。所以对已存在的路径还要用 `fs.realpathSync` 再验一次真实位置（不存在的路径跳过，否则 `write` 没法创建新文件）。几行成本，换掉一整类绕过。
+
+但这里要停下来讲一个更重要的东西：**约束的边界**。即便加了 `realpath`，从「检查通过」到「真正读写」之间仍有一个窗口，路径可能被换成软链——TOCTOU 竞态。要堵死它需要 `openat` 一类的系统调用，Node 没有暴露。这不是我们偷懒：`path.relative + realpath` 已经挡住了模型会犯的错，挡不住的是**主动攻击者**——而那本来就不该由工具层独自承担，是沙箱的活。诚实画出这条线，比假装安全有价值。
+
 **B. 上下文爆炸**
 
 让 agent 读一个 `package-lock.json`（几 MB）。请求直接 400——超出 65536 上下文。整个会话报废。
