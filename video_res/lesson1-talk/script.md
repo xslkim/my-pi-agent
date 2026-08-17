@@ -23,35 +23,11 @@
 >>> 先看协议 #B02
 @enter: fade
 @exit: fade
-@visual: html
+@visual: video(./assets/curl-sse.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
-.term{width:1640px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
-.dot{width:20px;height:20px;border-radius:50%}
-.body{padding:44px 56px;font-family:"JetBrains Mono",monospace;font-size:29px;line-height:1.85}
-.p{color:#ff7b72}.d{color:#a5d6ff}.c{color:#8b949e}.k{color:#d2a8ff}.g{color:#3fb950}
-</style></head><body>
-<div class="term">
-<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
-<div class="body">
-<div><span class="p">$</span> curl -N $LLM_BASE_URL/chat/completions <span class="c">\</span></div>
-<div>&nbsp;&nbsp;-H <span class="d">"content-type: application/json"</span> <span class="c">\</span></div>
-<div>&nbsp;&nbsp;-d <span class="d">'{"model":"qwen3.8-27b","stream":true,"messages":[...]}'</span></div>
-<div>&nbsp;</div>
-<div><span class="k">data:</span> {"choices":[{"delta":{"content":"数"}}]}</div>
-<div>&nbsp;</div>
-<div><span class="k">data:</span> {"choices":[{"delta":{"content":"到"}}]}</div>
-<div>&nbsp;</div>
-<div><span class="k">data:</span> {"choices":[{"delta":{"content":"三"}}]}</div>
-<div>&nbsp;</div>
-<div><span class="k">data:</span> <span class="g">[DONE]</span></div>
-</div>
-</div>
-</body></html>
+（此描述仅作文档用途，实际使用 ./assets/curl-sse.mp4）
+真实录屏：curl -N 以 300B/s 限速拉取 SSE 字节流，data: 事件逐行到达，最后 [DONE]。
 
 --- narration ---
 不写代码，先用 curl 看真实的字节流
@@ -317,34 +293,11 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 >>> 见真章 #B10
 @enter: zoom-in
 @exit: fade
-@visual: html
+@visual: video(./assets/talk-demo.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
-.term{width:1640px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
-.dot{width:20px;height:20px;border-radius:50%}
-.body{padding:46px 60px;font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.9}
-.p{color:#ff7b72}.dim{color:#8b949e}.tok{color:#8b949e}.g{color:#3fb950}
-</style></head><body>
-<div class="term">
-<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
-<div class="body">
-<div><span class="p">$</span> node src/cli.ts "用三句话解释什么是 SSE"</div>
-<div class="dim">思考中…用户要求三句话，需要简洁……</div>
-<div>&nbsp;</div>
-<div>SSE 通常指 Server-Sent Events，一种服务器单向推送的技术。</div>
-<div>它使用文本事件流，适合行情、通知等持续更新场景。</div>
-<div>它比 WebSocket 更简单，并且支持自动重连。</div>
-<div>&nbsp;</div>
-<div class="tok">[tokens: in=58 out=330]</div>
-<div>&nbsp;</div>
-<div class="g">✔ 思考暗色显示 · 正文逐字流式 · 末尾打印 token 用量</div>
-</div>
-</div>
-</body></html>
+（此描述仅作文档用途，实际使用 ./assets/talk-demo.mp4）
+真实录屏：node src/cli.ts 真机流式输出——暗色思考、逐字正文、末尾 token 统计。
 
 --- narration ---
 见真章
@@ -358,34 +311,11 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 >>> pi 对照 #B11
 @enter: fade
 @exit: fade
-@visual: html
+@visual: video(./assets/pi-scroll.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
-.wrap{padding:80px 100px 0}
-h1{font-size:56px;margin-bottom:50px}
-.row{display:flex;align-items:stretch;gap:60px;justify-content:center;margin-bottom:52px}
-.card{width:560px;background:#161b22;border:1px solid #30363d;border-radius:18px;padding:44px 40px;text-align:center}
-.file{font-family:"JetBrains Mono",monospace;font-size:26px;color:#a5d6ff;margin-bottom:24px}
-.num{font-size:120px;font-weight:800;line-height:1}
-.vs{display:flex;align-items:center;font-size:56px;color:#58a6ff;font-weight:700}
-pre{font-family:"JetBrains Mono",monospace;font-size:28px;line-height:1.8;background:#161b22;border:1px solid #30363d;border-radius:16px;padding:36px 48px;white-space:pre;color:#a5d6ff}
-.c{color:#8b949e}.k{color:#ff7b72}
-.foot{margin-top:40px;text-align:center;font-size:32px}
-.foot b{color:#58a6ff}
-</style></head><body><div class="wrap">
-<h1>pi 对照 · openai-completions.ts</h1>
-<div class="row">
-<div class="card"><div class="file">pi</div><div class="num">1577 行</div></div>
-<div class="vs">VS</div>
-<div class="card"><div class="file">我们 · llm.ts</div><div class="num" style="color:#58a6ff">115 行</div></div>
-</div>
-<pre><span class="c">// pi 源码第 493 行：光"思考字段"就要兼容三种命名</span>
-<span class="k">const</span> reasoningFields = [<span class="a">"reasoning_content"</span>, <span class="a">"reasoning"</span>, <span class="a">"reasoning_text"</span>];</pre>
-<div class="foot">那 1462 行不是废话，是 <b>兼容性税</b>。你只打一个端点时，不必交这个税。</div>
-</div></body></html>
+（此描述仅作文档用途，实际使用 ./assets/pi-scroll.mp4）
+真实源码滚动：pi openai-completions.ts（1577 行）第 60–560 行快速滚过。
 
 --- narration ---
 每课末尾，对照 pi

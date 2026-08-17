@@ -382,34 +382,11 @@ pre{font-family:"JetBrains Mono",monospace;font-size:28px;line-height:1.8;white-
 >>> 见真章 #B11
 @enter: zoom-in
 @exit: fade
-@visual: html
+@visual: video(./assets/calc-tools.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
-.term{width:1640px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
-.dot{width:20px;height:20px;border-radius:50%}
-.body{padding:46px 60px;font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.95}
-.p{color:#ff7b72}.dim{color:#8b949e}.acc{color:#58a6ff}
-</style></head><body>
-<div class="term">
-<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
-<div class="body">
-<div><span class="p">$</span> node src/cli.ts "用计算器算 (21*2)+8 等于几"</div>
-<div>&nbsp;</div>
-<div><span class="acc">→ calculator({"a":21,"b":2,"op":"*"})</span></div>
-<div>← 42 (1ms)</div>
-<div><span class="acc">→ calculator({"a":42,"b":8,"op":"+"})</span></div>
-<div>← 50 (0ms)</div>
-<div>&nbsp;</div>
-<div>(21×2)+8 = <b>50</b>，已用计算器分两步验证。</div>
-<div>&nbsp;</div>
-<div class="dim">它现在是一个 agent 了 —— 约六百行代码</div>
-</div>
-</div>
-</body></html>
+（此描述仅作文档用途，实际使用 ./assets/calc-tools.mp4）
+真实录屏：模型串行两次调用 calculator（21*2 → 42+8），参数与结果实时可见。
 
 --- narration ---
 见真章
@@ -423,39 +400,11 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 >>> pi 对照与小结 #B12
 @enter: fade-up
 @exit: fade
-@visual: html
+@visual: video(./assets/pi-loop.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
-.wrap{padding:80px 100px 0}
-h1{font-size:54px;margin-bottom:46px}
-.row{display:flex;gap:56px;justify-content:center;margin-bottom:46px}
-.card{width:520px;background:#161b22;border:1px solid #30363d;border-radius:18px;padding:40px 38px;text-align:center}
-.file{font-family:"JetBrains Mono",monospace;font-size:25px;color:#a5d6ff;margin-bottom:20px}
-.num{font-size:110px;font-weight:800;line-height:1}
-.vs{display:flex;align-items:center;font-size:54px;color:#58a6ff;font-weight:700}
-table{width:100%;border-collapse:collapse;font-size:29px}
-td{padding:16px 26px;border-top:1px solid #30363d}
-td:first-child{color:#a5d6ff;font-family:"JetBrains Mono",monospace;font-size:26px}
-td:last-child{color:#8b949e}
-.foot{margin-top:36px;text-align:center;font-size:32px}
-.foot b{color:#58a6ff}
-</style></head><body><div class="wrap">
-<h1>pi 对照 · agent-loop.ts</h1>
-<div class="row">
-<div class="card"><div class="file">pi</div><div class="num">796 行</div></div>
-<div class="vs">VS</div>
-<div class="card"><div class="file">我们 · loop.ts</div><div class="num" style="color:#58a6ff">115 行</div></div>
-</div>
-<table>
-<tr><td>parallel tools</td><td>并行执行、竞态与错误聚合</td></tr>
-<tr><td>steering queue</td><td>跑到一半插话</td></tr>
-<tr><td>lifecycle hooks</td><td>beforeToolCall 权限拦截</td></tr>
-</table>
-<div class="foot">pi 的复杂度不是炫技，是把我们跳过的边界一个个补上。<br>但要理解 agent 是什么——<b>一个循环就够了</b>。</div>
-</div></body></html>
+（此描述仅作文档用途，实际使用 ./assets/pi-loop.mp4）
+真实源码滚动：pi agent-loop.ts（796 行）开头快速滚过。
 
 --- narration ---
 pi 的 loop 七百九十六行

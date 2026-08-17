@@ -170,36 +170,11 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 >>> run1 实况 #B06
 @enter: slide-left
 @exit: fade
-@visual: html
+@visual: video(./assets/run1-timelapse.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
-.term{width:1700px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bar{height:60px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
-.dot{width:18px;height:18px;border-radius:50%}
-.body{padding:40px 56px;font-family:"JetBrains Mono",monospace;font-size:27px;line-height:1.9}
-.acc{color:#58a6ff}.dim{color:#8b949e}.g{color:#3fb950}.r{color:#ff7b72}
-.cursor{display:inline-block;width:16px;height:30px;background:#58a6ff;vertical-align:middle;animation:none}
-</style></head><body>
-<div class="term">
-<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
-<div class="body">
-<div><span class="acc">→ write({"path":"server.ts", ...})</span>&nbsp;&nbsp;<span class="g">← wrote server.ts (220 lines)</span></div>
-<div><span class="acc">→ write({"path":"public/login.html", ...})</span>&nbsp;<span class="g">← wrote (114 lines)</span></div>
-<div><span class="acc">→ write({"path":"public/app.js", ...})</span>&nbsp;&nbsp;&nbsp;<span class="g">← wrote (107 lines)</span></div>
-<div><span class="acc">→ write({"path":"package.json", ...})</span>&nbsp;&nbsp;&nbsp;<span class="g">← wrote (11 lines)</span></div>
-<div class="dim">（五个文件全部写完）</div>
-<div>&nbsp;</div>
-<div><span class="acc">→ bash({"command":"PORT=3100 node server.ts > server.log 2>&1 &</span></div>
-<div><span class="acc">&nbsp;&nbsp;&nbsp;&nbsp;sleep 1.5; cat server.log"})</span></div>
-<div>&nbsp;</div>
-<div class="r">（……没有返回。一直没有。）</div>
-<div class="r">✖ 卡死了 —— 这不是剧本，是真实发生的事故</div>
-</div>
-</div>
-</body></html>
+（此描述仅作文档用途，实际使用 ./assets/run1-timelapse.mp4）
+由 docs/runs/l5-run1.jsonl 会话记录回放的快进时间轴（真实工具序列，时间轴按比例重建）。
 
 --- narration ---
 真实的 run1 是这样的

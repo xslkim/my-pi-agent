@@ -21,10 +21,12 @@
    `D:\AutoVideo\project\<slug>\` 下」的惯例指向 `D:\AutoVideo\B00.wav`。若直接在本目录构建，
    请把 `voiceRef` 改为绝对路径 `D:/AutoVideo/B00.wav`。
 2. **视觉模式分布**（遵循 AUTHORING.md §3.0 的优先级规则）：
-   - `html`（多数块）：代码窗口、终端回放、对比卡片、表格——手写 HTML 截图，不调 AI、零失败率；
+   - `video(./assets/*.mp4)`（10 处）：**真实终端实录**与真实源码滚动——录制与生成方式见
+     [`assets/README.md`](assets/README.md)，该模式不调 AI；
+   - `html`（多数块）：代码窗口、对比卡片、表格——手写 HTML 截图，不调 AI、零失败率；
    - `animation`（每课 2–3 块）：需要跟随旁白推进的动效（SSE 分片、agent loop、abort 贯穿、
      管道死锁、成组裁剪等），描述中已写明用 `props.lineTimings` 驱动；
-   - 未使用 `image` API 模式（无外部图片资产依赖）。
+   - 未使用 `image` API 模式（无文生图依赖）。
 3. **内容来源**：讲稿与实况数据取自仓库 `docs/lessons/` 与 `docs/runs/run1.md`——第 5 课的
    bash 死锁事故、`jobs -p` 修复、run1/run2 对比均为本项目真实事件，非虚构。
 4. 每课片尾都带 git tag 提示（`l1-talk` … `l5-delivery`），观众可 `git checkout` 到任意一课状态。

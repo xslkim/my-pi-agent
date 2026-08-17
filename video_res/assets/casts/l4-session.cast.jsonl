@@ -1,0 +1,9 @@
+{"title":"node src/cli.ts"}
+{"t":0,"s":"o","d":"\u001b[32m$\u001b[0m node src/cli.ts \"我的代号是紫葡萄，请记住。只回答：好的\" -s vdemo --no-thinking\r\n"}
+{"t":3415,"s":"o","d":"好的"}
+{"t":3454,"s":"o","d":"\r\n"}
+{"t":3454,"s":"clear","d":""}
+{"t":3454,"s":"o","d":"\u001b[32m$\u001b[0m node src/cli.ts \"我的代号是什么？只回答代号本身\" -s vdemo -c --no-thinking\r\n"}
+{"t":7580,"s":"o","d":"紫"}
+{"t":7618,"s":"o","d":"葡萄"}
+{"t":7631,"s":"o","d":"\r\n"}

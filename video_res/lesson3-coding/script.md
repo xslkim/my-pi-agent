@@ -378,34 +378,11 @@ system prompt 只有五条，短、具体、可执行
 >>> 见真章 #B12
 @enter: zoom-in
 @exit: fade
-@visual: html
+@visual: video(./assets/hellojs-demo.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
-.term{width:1640px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
-.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
-.dot{width:20px;height:20px;border-radius:50%}
-.body{padding:44px 60px;font-family:"JetBrains Mono",monospace;font-size:30px;line-height:1.95}
-.p{color:#ff7b72}.acc{color:#58a6ff}.dim{color:#8b949e}
-</style></head><body>
-<div class="term">
-<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
-<div class="body">
-<div><span class="p">$</span> node src/cli.ts --cwd demo/tmp "创建 hello.js 打印 hello world，用 node 跑一遍验证"</div>
-<div>&nbsp;</div>
-<div><span class="acc">→ write({"path":"hello.js","content":"console.log(\"hello world\");"})</span></div>
-<div>← wrote hello.js (2 lines)</div>
-<div><span class="acc">→ bash({"command":"node hello.js"})</span></div>
-<div>← exit: 0&nbsp;&nbsp;--- stdout ---&nbsp;&nbsp;hello world</div>
-<div>&nbsp;</div>
-<div>完成：创建 hello.js 并运行验证，输出 hello world，退出码 0。</div>
-<div>&nbsp;</div>
-<div class="dim">read → edit → bash 验证 → 汇报。900 行，一个能改代码的 agent。</div>
-</div>
-</div>
-</body></html>
+（此描述仅作文档用途，实际使用 ./assets/hellojs-demo.mp4）
+真实录屏：agent 在 demo/tmp 创建 hello.js 并用 node 运行验证。
 
 --- narration ---
 见真章

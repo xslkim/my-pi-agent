@@ -359,40 +359,11 @@ li::before{position:absolute;left:0;font-size:28px}
 >>> 见真章与 pi 对照 #B11
 @enter: fade-up
 @exit: fade
-@visual: html
+@visual: video(./assets/session-resume.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
-.wrap{padding:80px 100px 0}
-h1{font-size:54px;margin-bottom:44px}
-.checks{display:flex;gap:30px;margin-bottom:46px}
-.c{flex:1;background:#161b22;border:1px solid #30363d;border-top:6px solid #3fb950;border-radius:14px;padding:28px 26px;font-size:28px;line-height:1.7}
-.c b{color:#3fb950;display:block;margin-bottom:10px;font-size:30px}
-table{width:100%;border-collapse:collapse;font-size:29px;margin-bottom:36px}
-th{text-align:left;color:#8b949e;font-weight:400;font-size:27px;padding:0 26px 14px}
-td{padding:17px 26px;border-top:1px solid #30363d}
-td:first-child{color:#a5d6ff;font-family:"JetBrains Mono",monospace;font-size:26px}
-td:last-child{color:#8b949e}
-.foot{text-align:center;font-size:33px}
-.foot b{color:#58a6ff}
-</style></head><body><div class="wrap">
-<h1>见真章 · 然后对照 pi</h1>
-<div class="checks">
-<div class="c"><b>✔ 连聊十几轮</b>上下文自动裁剪，不炸 400</div>
-<div class="c"><b>✔ 中途 Ctrl+C</b>只停本轮，子进程被杀，能继续聊</div>
-<div class="c"><b>✔ 退出再 -c 续聊</b>模型记得上文</div>
-</div>
-<table>
-<tr><th>我们</th><th>pi 的答案</th></tr>
-<tr><td>fitContext 丢最老轮次</td><td>compaction：用 LLM 把旧对话总结成摘要再保留</td></tr>
-<tr><td>一行一条 JSONL</td><td>带 header、分支（fork）、崩溃恢复的状态机</td></tr>
-<tr><td>一个 AbortController</td><td>区分 abort / suspend / deferred，可恢复</td></tr>
-</table>
-<div class="foot">丢历史还是压历史？<b>没有免费的午餐</b>——摘要要多花一次调用，还可能丢细节。</div>
-</div></div></body></html>
-
+（此描述仅作文档用途，实际使用 ./assets/session-resume.mp4）
+真实录屏：两次单发——先存「代号紫葡萄」，再 -s vdemo -c 续聊答出代号。
 
 --- narration ---
 见真章
