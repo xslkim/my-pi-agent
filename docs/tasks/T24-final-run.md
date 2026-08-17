@@ -1,6 +1,6 @@
 # T24 · 重跑 run2 + 验收 + 复盘（L5 收尾 / 项目收尾）
 
-> 课：L5 · 规格：[specs/05-delivery.md「验收」](../specs/05-delivery.md) · 预算：0 行 · 前置：T23
+> 课：L5 · 规格：[specs/05-delivery.md「四、执行流程」](../specs/05-delivery.md) · 预算：0 行 · 前置：T23
 
 ## 目标
 
@@ -8,36 +8,37 @@
 
 ## 要产出的文件
 
-- `docs/runs/run2.md`（新建）
-- `.agent/sessions/l5-run2.jsonl`（提交）
+- `docs/runs/run2.md`
+- `docs/runs/l5-run2.jsonl`（提交）
+- `docs/runs/README.md`（run1 / run2 对比表）
 - `demo/login-app/`（agent 产出的应用，提交）
-- `docs/runs/README.md`（run1 / run2 对比）
 
 ## 怎么做
 
-```bash
-rm -rf demo/login-app && mkdir -p demo/login-app
-node src/cli.ts --cwd demo/login-app -s l5-run2 --max-steps 30 "<与 run1 逐字相同的任务描述>"
+```powershell
+Remove-Item -Recurse -Force demo/login-app -ErrorAction SilentlyContinue
+New-Item -ItemType Directory -Force demo/login-app
+node src/cli.ts --cwd demo/login-app -s l5-run2 --max-steps 30 (Get-Content -Raw acceptance/task-prompt.md)
 ```
 
-**任务描述必须与 run1 完全一致。** 改了描述，对比就失去意义——那就变成了「换个问法能不能过」，而不是「加固有没有用」。
+**必须从空目录开始**，否则测的是「人 + agent」而不是 agent。任务描述同样从 `acceptance/task-prompt.md` 读取——它被 [T20](T20-lock-acceptance.md) 锁定，逐字一致由校验和保证，不靠人自觉。
 
 验收：
 
 ```bash
-node test/verify-lock.ts          # 先证明考卷没被动过
-node --test test/login-app.smoke.ts
+node acceptance/verify-lock.ts            # 先证明考卷没被动过
+node --test acceptance/login-app.smoke.ts
 ```
 
 ## 验收
 
-- [ ] `verify-lock.ts` 退出码 0（**冒烟测试与基线校验和一致**）
-- [ ] `node --test test/login-app.smoke.ts` 全绿
+- [ ] `verify-lock.ts` 退出码 0（**冒烟测试与任务 prompt 都与基线一致**）
+- [ ] `node --test acceptance/login-app.smoke.ts` 全绿（10 条断言，含 logout 两条）
 - [ ] `demo/login-app/data.db` 生成在应用目录下，且不含明文密码
 - [ ] 应用本身零依赖（`node:http` + `node:sqlite` + `node:crypto`），`demo/login-app` 下没有 `package.json` 的 `dependencies`
-- [ ] 浏览器打开能真的注册、登录、看到欢迎页
+- [ ] 浏览器打开能真的注册、登录、登出、看到欢迎页
 
-如果没过：**修 agent 或 prompt，不修考卷**，然后重跑并记为 run3。允许多轮，但每轮都要留记录。
+如果没过：**修 agent 或 prompt，不修考卷**，然后从空目录重跑并记为 run3。允许多轮，但每轮都要留记录。
 
 ## 复盘要写什么
 
@@ -52,7 +53,7 @@ node --test test/login-app.smoke.ts
 ## 项目收尾（本任务额外要做）
 
 - [ ] 预算检查：`src/` 总行数 ≤ 1400，并把**实际数字**回填到 [teaching-agent-plan.md](../teaching-agent-plan.md) 的预算表
-- [ ] 全量 `node --test` 全绿且**断网可跑**（把 L5 的真机测试排除在 `node --test` 默认集之外）
+- [ ] `node --test` 全绿且**断网可跑**（默认测试集里不含 `acceptance/`，见 [T20](T20-lock-acceptance.md)）
 - [ ] `npx tsc --noEmit` 无错
 - [ ] `dependencies` 仍为空
 - [ ] 打 tag：`git tag l5-delivery`
@@ -61,7 +62,7 @@ node --test test/login-app.smoke.ts
 
 ## 不要做
 
-- 不改 `test/login-app.smoke.ts` 或它的校验和
+- 不改 `acceptance/` 下的任何文件
 - 不手工修补 agent 生成的应用代码（那样交付的就不是 agent 的作品了）
 
 ## 完成动作

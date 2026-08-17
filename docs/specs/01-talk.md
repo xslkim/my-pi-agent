@@ -173,6 +173,8 @@ const MODEL = required("LLM_MODEL");
 
 `test/fake-llm.ts`：起一个 `node:http` 服务，按给定脚本把 SSE 字节写回去。关键能力是**按任意字节边界切分**，用来复现真实网络的分片。
 
+它必须**没有顶层副作用**：`node --test` 会把 `test/` 下每个 `.ts` 文件都执行一遍（包括这种纯工具模块），顶层起服务的话每次跑测试都会莫名多一个监听端口。
+
 ```ts
 export interface FakeScript {
   chunks: string[];        // 每个元素是一次 socket write 的原始字节

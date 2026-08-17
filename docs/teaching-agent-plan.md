@@ -40,7 +40,9 @@ import pi 学员只能看见胶水层，看不见 SSE 怎么切、tool_call 增�
 | `node:sqlite` | `DatabaseSync` 可用（有 experimental 警告） | L5 登录后台存用户 |
 | `node:crypto` `scryptSync` | 可用 | L5 密码哈希 |
 
-`package.json` 里 **`dependencies` 为空**。`devDependencies` 最多只放 `typescript`（仅供 `tsc --noEmit` 类型检查，不参与运行）。
+`package.json` 里 **`dependencies` 为空**。`devDependencies` 只放 `typescript` 和 `@types/node`——两者都只服务于 `tsc --noEmit`，不参与运行，零**运行时**依赖的原则不变。`@types/node` 不能省：没有它，`process`、`AbortController`、`node:test` 全部无类型，类型检查根本过不去。
+
+另一个必须知道的细节（本机 v25.2.1 实测）：不带参数的 `node --test` 会执行 `test/` 下**递归的每一个 `.ts` 文件**（哪怕不叫 `*.test.ts`），以及仓库任意位置的 `*.test.ts`。所以 L5 的验收脚本放在 `acceptance/`——放进 `test/` 会让默认测试集在应用存在之前就永久变红。
 
 约束（类型剥离的代价，课程要讲）：
 
@@ -125,7 +127,7 @@ SSE 响应，每块 `data: {...}\n\n`，以 `data: [DONE]` 结束。每块里：
 
 - `read` —— 带 offset/limit 与**输出截断**（不截断会一个文件炸掉 64K 上下文）
 - `write` —— 自动建父目录
-- `edit` —— 精确字符串替换，**要求 oldText 在文件中唯一**，不唯一就报错（这是 agent 编辑的核心安全约束）
+- `edit` —— 精确字符串替换，**要求 old_string 在文件中唯一**，不唯一就报错（这是 agent 编辑的核心安全约束）
 - `bash` —— 超时、cwd 约束、输出截断
 
 外加 `guard.ts`：路径越界检查（不许跳出工作目录）、统一截断、统一超时。
@@ -145,7 +147,7 @@ readline REPL、`Ctrl+C` 只中止当前轮（`AbortSignal` 要贯穿 fetch 和�
 - 会话 —— `randomUUID()` token 放 httpOnly cookie
 - 前端 —— `public/login.html` + `public/app.js`，能注册、登录、显示当前用户、登出
 
-**验收方式（关键设计）**：冒烟测试 `test/login-app.smoke.ts` 由我们**预先写好并锁定**，agent 不许修改它。内容：起服务 → 注册 → 登录 → 带 cookie 访问 `/api/me` 拿到用户名 → 登出后 `/api/me` 返回 401 → 错误密码返回 401。
+**验收方式（关键设计）**：冒烟测试 `acceptance/login-app.smoke.ts` 与任务描述 `acceptance/task-prompt.md` 由我们**预先写好并用校验和锁定**，agent 不许修改。冒烟内容：起服务 → 注册 201 → 重复注册 409 → 错密码 401 且不下发 cookie → 登录 200 下发 HttpOnly + SameSite=Strict cookie → 带 cookie 访问 `/api/me` 拿到用户名 → 不带 cookie 401 → 登出 200 → 登出后 401 → 首页含表单 → 数据库里搜不到明文密码。
 
 这条规则解决了 agent 演示最常见的作弊：改测试让它过。**验收先行、不可篡改**，通过就是通过。
 
@@ -179,12 +181,14 @@ my-pi-agent/
       guard.ts               # L3 路径/截断/超时
       read.ts write.ts edit.ts bash.ts   # L3
       ls.ts grep.ts          # L5 按需补
-  test/                      # 不计入行数预算
-    fake-llm.ts              # 自制假模型：node:http 回放 SSE 脚本
+  test/                      # 不计入行数预算；这里的每个 .ts 都会被 node --test 跑到
+    fake-llm.ts              # 自制假模型：node:http 回放 SSE 脚本（必须无顶层副作用）
     *.test.ts                # node --test
-    login-app.smoke.ts       # L5 锁定的验收脚本
-    login-app.smoke.sha256   # L5 校验和基线（进版本库）
-    verify-lock.ts           # L5 校验和比对
+  acceptance/                # L5 的考卷，刻意不放 test/，只能显式运行
+    login-app.smoke.ts       # 锁定的验收脚本
+    task-prompt.md           # 锁定的任务描述（run1/run2 逐字一致的保证）
+    lock.sha256              # 上面两份的校验和基线（进版本库）
+    verify-lock.ts           # 校验和比对
   demo/
     login-app/               # L5 agent 的产出目录（data.db 不进库）
     tmp/                     # L3/L4 演示用的临时工作目录
@@ -193,10 +197,13 @@ my-pi-agent/
     specs/01..05-*.md        # 每课实现规格
     lessons/01..05-*.md      # 每课教学脚本
     tasks/T00..T24-*.md      # 可执行任务，交给 agent 干活
-    runs/run1.md run2.md     # L5 两次跑的记录与复盘
+    runs/                    # L5 两次跑的记录：run1.md run2.md README.md（对比表）
+                             # 以及 l5-run1.jsonl / l5-run2.jsonl（会话原始记录）
 ```
 
-`.gitignore` 至少要有：`.agent/`（会话文件）、`demo/tmp/`、`demo/login-app/data.db`。否则 L4/L5 打 tag 时会把会话记录和数据库一起提交。
+`.gitignore` 至少要有：`.agent/`（运行时会话）、`demo/tmp/`、`*.db`。
+
+注意**不要**写 `*.jsonl` 这样的通配：L5 要求提交两次正式运行的会话记录，通配会把它们一起挡掉，而 `git add` 静默跳过被忽略的文件——产物就这么丢了。那两份记录另存到 `docs/runs/` 下再提交，`.gitignore` 因此可以保持简单。
 
 命令：
 
@@ -235,7 +242,7 @@ npx tsc --noEmit              # 类型检查
 |---|---|---|
 | L1 | 把 SSE chunk 从中间切断 | 天真解析器吐出乱码/丢字 |
 | L2 | 模型传 `{"a": "21"}` 字符串、或调不存在的工具 | 没有运行时校验就崩 |
-| L3 | `edit` 的 oldText 匹配到两处；`read` 一个 5MB 文件 | 改错地方 / 上下文瞬间爆 |
+| L3 | `edit` 的 old_string 匹配到两处；`read` 一个 5MB 文件 | 改错地方 / 上下文瞬间爆 |
 | L4 | 聊到超过 64K；中途 `Ctrl+C` | 报 400；abort 没贯穿会僵住 |
 | L5 | agent 自己制造的真实失败 | 前四课的代码不够用 |
 

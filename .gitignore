@@ -1,8 +1,7 @@
 node_modules/
 
-# L4 会话文件
+# L4 运行时会话（L5 的两次正式运行会另存到 docs/runs/ 并提交）
 .agent/
-*.jsonl
 
 # L3/L4 演示用临时工作目录
 demo/tmp/

@@ -1,6 +1,6 @@
 # T16 · JSONL 会话持久化
 
-> 课：L4 · 规格：[specs/04-usable.md「会话持久化」](../specs/04-usable.md) · 预算：60 行 · 前置：T15
+> 课：L4 · 规格：[specs/04-usable.md「2. 会话持久化」](../specs/04-usable.md) · 预算：60 行 · 前置：T15
 
 ## 目标
 

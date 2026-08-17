@@ -15,17 +15,23 @@
 3. **每个任务必须跑通自己的「验收」命令**才算完成。跑不通就修，不要跳过、不要改测试迁就实现。
 4. 完成后按任务文档末尾的「完成动作」提交，并把本文件状态表里对应行改成 `done`。
 5. **行数预算是硬约束。** 每完成一课跑一次预算检查（见下），超了就精简实现，不许突破总量。
-6. 禁止引入任何 npm 依赖。只用 Node 内置模块。`package.json` 的 `dependencies` 必须保持为空。
-7. 禁止修改 `test/login-app.smoke.ts` 和 `test/login-app.smoke.sha256`（T20 建立后即锁定）。
-8. 遇到 spec 与现实冲突（比如真实模型行为不符），**先停下报告**，不要自行改设计。
+6. 禁止引入任何运行时依赖。只用 Node 内置模块，`dependencies` 必须保持为空；`devDependencies` 只允许 `typescript` 和 `@types/node`。
+7. 禁止修改 `acceptance/` 下的任何文件（[T20](T20-lock-acceptance.md) 建立后即锁定）。
+8. **任务文档可以细化 spec，但不得与之矛盾。** 若发现两层说法不一致：按任务文档实现（它更新、更具体），完成后**回写 spec**，让两层重新对齐。别留着不管——下一个人不知道该信哪份。
+9. 遇到 spec 与**现实**冲突（比如真实模型行为与文档描述不符），**先停下报告**，不要自行改设计。
 
 ### 常用命令
 
 ```bash
-node --test                     # 全部测试（必须离线可跑）
+node --test                     # 全部单元测试（必须离线可跑、必须全绿）
 node --test test/llm.test.ts    # 单个测试文件
 npx tsc --noEmit                # 类型检查
+
+node acceptance/verify-lock.ts             # L5：考卷未被篡改
+node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在默认测试集里）
 ```
+
+**`node --test` 的发现规则**（v25.2.1 实测）：`test/` 下递归的每个 `.ts` 都会被执行——哪怕它不叫 `*.test.ts`、哪怕里面没有一个 `test()`；此外仓库任意位置的 `*.test.ts` 也会被执行。所以 `test/` 里的辅助文件必须无顶层副作用，而 L5 的验收脚本放在 `acceptance/`，否则它会在应用存在之前就把默认测试集永久染红。
 
 预算检查（PowerShell，只统计 `src/`）：
 
@@ -61,7 +67,7 @@ npx tsc --noEmit                # 类型检查
 | [T17](T17-retry.md) | 请求重试 | L4 | 40 | T16 | todo |
 | [T18](T18-repl.md) | REPL 与中止贯穿 | L4 | 110 | T17 | todo |
 | [T19](T19-cli-args.md) | CLI 参数整合 + 冒烟 | L4 | 20 | T18 | todo |
-| [T20](T20-lock-acceptance.md) | **锁定验收脚本**（先于交付） | L5 | 0 | T19 | todo |
+| [T20](T20-lock-acceptance.md) | **锁定验收脚本与任务 prompt** | L5 | 0 | T19 | todo |
 | [T21](T21-bare-run.md) | 裸跑 run1 与失败记录 | L5 | 0 | T20 | todo |
 | [T22](T22-ls-grep.md) | ls / grep 工具 | L5 | 110 | T21 | todo |
 | [T23](T23-hardening.md) | 按失败记录加固 | L5 | 90 | T22 | todo |

@@ -1,6 +1,6 @@
 # T07 · tool_call 增量解析
 
-> 课：L2 · 规格：[specs/02-tools.md「工具调用的流式拼接」](../specs/02-tools.md) · 预算：15 行（`llm.ts` 增量） · 前置：T06
+> 课：L2 · 规格：[specs/02-tools.md「1. tool_call 增量拼接」](../specs/02-tools.md) · 预算：15 行（`llm.ts` 增量） · 前置：T06
 
 ## 目标
 

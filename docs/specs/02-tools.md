@@ -14,10 +14,12 @@
 |---|---|---|
 | `src/tools/registry.ts` | `Tool` 接口、注册表、运行时参数校验 | 70 |
 | `src/tools/calculator.ts` | 教学工具 | 40 |
-| `src/loop.ts` | agent loop | 120 |
+| `src/loop.ts` | agent loop | 115 |
+| `src/llm.ts` | 补 `tool_call_delta` 产出与 `tools` 请求参数（L1 已留位） | +15 |
+| `src/cli.ts` | 改走 loop、显示工具调用 | +10 |
 | `test/loop.test.ts` | loop 与工具测试 | — |
 
-`src/llm.ts` 补上 `tool_call_delta` 的产出与 `tools` 请求参数（L1 已留位）。
+逐任务的拆分见 [tasks/T05–T09](../tasks/README.md)。
 
 ## 数据结构
 
@@ -116,30 +118,37 @@ Error: invalid arguments for calculator: field "b" is required
 export interface LoopOptions {
   messages: Message[];
   tools: Tool[];
+  cwd: string;
   maxSteps?: number;                       // 默认 10
   signal?: AbortSignal;
-  onEvent?: (ev: LoopEvent) => void;
 }
 
-export async function runLoop(opts: LoopOptions): Promise<Message[]>;
+export async function* runAgent(opts: LoopOptions): AsyncGenerator<AgentEvent>;
 ```
+
+**做成 async generator 而不是「`Promise` + `onEvent` 回调」**，理由有三条，每条都在后面几课兑现：与 `streamChat` 同构（两层都是 `for await`，心智负担只有一份）；调用方 `break` 即中止，L4 的 `Ctrl+C` 几乎不用额外代码；测试里直接把事件收集成数组做断言，不用搭回调桩。
+
+代价是调用方必须消费完生成器，否则 `finally` 不执行——这一点要在课上点明。
 
 伪码：
 
 ```
 for step in 1..maxSteps:
     调 streamChat(messages, tools)
-    边流边 onEvent（文本增量、思考、工具名出现）
+    边流边 yield 事件（文本增量、思考、工具调用）
     收集 text 与 pending tool_calls
     把 assistant 消息（含 tool_calls）追加进 messages
-    if finish_reason != "tool_calls": return messages      // 正常结束
+    if 没有 tool_calls: return                             // 正常结束
     for each tool_call:
         找工具 → validate → execute（捕获异常转成文本）
         追加 { role: "tool", tool_call_id, content }
-抛 MaxStepsExceeded
+        yield 工具结果事件
+yield 一个 error 事件（超出 maxSteps）
 ```
 
 关键点：
+
+- **loop 内部不许 `console.log`**。所有输出都经 yield 交给 CLI，否则 loop 没法在测试里安静地跑，也没法换一个前端。
 
 - **`maxSteps` 必须有**。模型会陷入「反复调同一个工具」的循环，没有上限就把 64K 上下文烧光，然后报 400。
 - **工具异常要捕获**，转成 `Error: ...` 文本回给模型，而不是崩掉整个进程。
@@ -151,7 +160,7 @@ for step in 1..maxSteps:
 ```ts
 export const calculator: Tool = {
   name: "calculator",
-  description: "Compute a basic arithmetic expression on two numbers.",
+  description: "Compute a basic arithmetic operation on two numbers. Use this for any arithmetic; do not compute it yourself.",
   parameters: {
     type: "object",
     properties: {
@@ -179,7 +188,7 @@ export const calculator: Tool = {
 | **校验失败自愈** | 缺 `op` 时工具结果是错误文本，loop 继续而非崩溃 |
 | 未知工具 | 结果是 `Error: unknown tool: xxx`，loop 继续 |
 | 工具抛异常 | 除零错误变成文本回给模型 |
-| **maxSteps** | 假模型永远返回 tool_calls，第 10 步抛 `MaxStepsExceeded` |
+| **maxSteps** | 假模型永远返回 tool_calls，到上限后产出 error 事件并停止，不再发起新请求 |
 | abort | 工具执行中 abort，loop 干净退出 |
 
 ## 验收

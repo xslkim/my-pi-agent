@@ -1,6 +1,6 @@
 # T22 · ls / grep 工具
 
-> 课：L5 · 规格：[specs/05-delivery.md「补齐工具」](../specs/05-delivery.md) · 预算：110 行（ls 45 + grep 65） · 前置：T21
+> 课：L5 · 规格：[specs/05-delivery.md「三、我们要补的能力」](../specs/05-delivery.md) · 预算：110 行（ls 45 + grep 65） · 前置：T21
 
 ## 目标
 

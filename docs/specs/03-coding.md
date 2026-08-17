@@ -12,12 +12,14 @@
 
 | 文件 | 职责 | 预算 |
 |---|---|---|
-| `src/tools/guard.ts` | 路径越界检查、输出截断、超时 | 80 |
-| `src/tools/read.ts` | 读文件，带 offset/limit 与截断 | 60 |
+| `src/tools/guard.ts` | 路径越界检查、输出截断、超时 | 75 |
+| `src/tools/read.ts` | 读文件，带 offset/limit 与截断 | 55 |
 | `src/tools/write.ts` | 写文件，自动建父目录 | 30 |
 | `src/tools/edit.ts` | 唯一匹配的字符串替换 | 60 |
 | `src/tools/bash.ts` | 跑命令，带超时、cwd、截断 | 90 |
-| `src/prompt.ts` | system prompt | 30 |
+| `src/prompt.ts` + `src/cli.ts` | system prompt 与 `--cwd` | 40 |
+
+逐任务的拆分见 [tasks/T10–T14](../tasks/README.md)。
 
 ## 约束层（`guard.ts`）
 
@@ -43,7 +45,11 @@ if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`path escapes 
 return abs;
 ```
 
-用 `path.relative` 判断，不要用字符串 `startsWith(cwd)`——`/work` 和 `/work-evil` 会误判。符号链接不做深度解析（讲清这是已知缺口，pi 用 `realpath` 处理）。
+用 `path.relative` 判断，不要用字符串 `startsWith(cwd)`——`/work` 和 `/work-evil` 会误判。
+
+**符号链接也要拦**：对已存在的路径再用 `fs.realpathSync` 校验一次真实位置（路径不存在时跳过，否则 `write` 就没法创建新文件了）。只做 `path.relative` 的话，工作目录里一个指向外部的软链就能让全部约束失效，而补上这层只要三四行。pi 也是这么做的——这里我们和它口径一致。
+
+仍然不做的是**竞态防护**（TOCTOU：检查完到真正读写之间，路径被换成软链）。那需要 `openat` 一类的系统调用，Node 没有直接暴露。诚实承认这个缺口，并在 lesson 里作为「约束的边界在哪」的例子讲。
 
 `truncate` 为什么必要：一个 5MB 的 `package-lock.json` 直接塞进 64K 上下文 = 立刻 400。截断后要**明确告诉模型被截断了**，否则它以为自己看到了全文：
 
@@ -55,12 +61,16 @@ return abs;
 
 ## 四个工具
 
+工具参数一律用 **snake_case**（`old_string`、`timeout_ms`）：这是各家模型见得最多的写法，照着写命中率更高，而参数名是直接发给模型的。
+
 ### read
 
 参数：`path`、可选 `offset`（1 起）、可选 `limit`。
 
-- 只读文本；检测到 NUL 字节判定为二进制，返回 `[binary file, N bytes]` 而不是乱码
+- 只读文本；检测到 NUL 字节判定为二进制，返回 `error: binary file, cannot read as text`
 - 输出带行号（`  12| content`），模型据此做 `edit` 更准
+- 文件不存在、路径是目录，同样返回 `error: ...` 文本而不是抛异常——让模型自己换个路径重试
+- 空文件返回 `(empty file)`，不要返回空串（空串会让模型以为工具坏了）
 - 走 `truncate`
 
 ### write
@@ -68,28 +78,34 @@ return abs;
 参数：`path`、`content`。
 
 - `mkdir -p` 父目录
-- 返回 `Wrote N bytes to <relative path>`
+- 返回 `wrote <path> (<n> lines)`，给模型一个可核对的回执
+- 拒绝写入 `.git/` 下的任何路径
 - **不做覆盖确认**（教学版），但 system prompt 里要求优先用 `edit`
 
 ### edit（本课核心）
 
-参数：`path`、`oldText`、`newText`。
+参数：`path`、`old_string`、`new_string`、可选 `replace_all`（默认 false）。
 
 ```ts
 const content = await fs.readFile(abs, "utf8");
-const count = content.split(oldText).length - 1;
-if (count === 0) throw new Error("oldText not found in file");
-if (count > 1) throw new Error(`oldText appears ${count} times; include more surrounding context to make it unique`);
-await fs.writeFile(abs, content.replace(oldText, newText));
+const count = content.split(old_string).length - 1;
+if (count === 0) throw new Error(`old_string not found in ${p}`);
+if (count > 1 && !replace_all)
+  throw new Error(`old_string found ${count} times in ${p} (lines ${lines.join(", ")}). ` +
+                  `Provide more surrounding context to make it unique, or set replace_all.`);
 ```
 
-**唯一匹配是整个 agent 编辑机制的安全根基。** 匹配到多处就报错，把「加更多上下文」的要求明确写进错误信息里——模型看到会自己补全上下文重试。这是最重要的一条自愈路径。
+**唯一匹配是整个 agent 编辑机制的安全根基。** 匹配到多处就报错，把「加更多上下文」的要求和**全部匹配行号**写进错误信息——模型看到会去 `read` 那几行、补上下文再重试。这是最重要的一条自愈路径。
 
-返回一个极简 diff（改动前后各 2 行），让终端里能看见改了什么。
+`replace_all` 是刻意开的一个口子：批量改名这类需求不给逃生门的话，模型会退化成逐处 `edit`，把步数烧光。默认关闭，模型必须显式声明意图。
+
+保持原文件的换行风格（CRLF 不要被改成 LF）。返回一个极简 diff（改动前后各 2 行），让终端里能看见改了什么。
 
 ### bash（Windows 有真坑）
 
-参数：`command`、可选 `timeout`（秒，默认 60）。
+参数：`command`、可选 `timeout_ms`（毫秒，默认 30000，上限 120000）。
+
+单位用毫秒并把它写进参数名，是因为「秒还是毫秒」是模型和人都会搞错的经典歧义，而搞错的后果是 1000 倍。
 
 ```ts
 export function pickShell(): { file: string; args: string[] } {
@@ -119,7 +135,7 @@ You are a coding agent working in ${cwd}.
 Rules:
 - Read a file before editing it. Never guess its contents.
 - Prefer `edit` over `write` for existing files.
-- `edit` requires oldText to appear exactly once. If it fails, read more context and retry.
+- `edit` requires old_string to appear exactly once. If it fails, read more context and retry.
 - All paths must stay inside the workspace.
 - Explain what you changed after you finish.
 ```
@@ -132,13 +148,16 @@ Rules:
 |---|---|
 | **路径越界** | `../../etc/passwd`、绝对路径、`..\\..\\` 全部被拒 |
 | 相似前缀目录 | cwd 为 `/work` 时，`/work-evil/x` 被拒 |
+| **符号链接逃逸** | 指向工作目录外的软链被拒（Windows 无权限建软链时 skip，不要让测试变红） |
 | read 截断 | 1000 行文件默认只返回 200 行且带截断提示 |
-| read 二进制 | 含 NUL 的文件返回 `[binary file...]` |
+| read 二进制 | 含 NUL 的文件返回 `error: binary file...` |
 | write 建目录 | 写 `a/b/c.txt` 会自动创建 `a/b` |
-| **edit 唯一匹配** | 出现 2 次时报错且**文件未被修改** |
+| write 保护 | 写 `.git/config` 被拒 |
+| **edit 唯一匹配** | 出现 2 次时报错、错误里带全部行号，且**文件未被修改** |
 | edit 未找到 | 报错且文件未修改 |
 | edit 成功 | 内容正确替换，返回 diff |
-| bash 超时 | `sleep 5` + timeout 1 → 1 秒内返回超时错误，进程已死 |
+| edit replace_all | 3 处全被替换，返回替换次数 |
+| bash 超时 | `sleep 5` + `timeout_ms: 300` → 明显小于 5s 返回超时错误，进程已死 |
 | bash 退出码 | `exit 3` 的输出里含 `[exit 3]` |
 | bash 截断 | 输出 10000 行被截断 |
 | **完整闭环** | 假模型驱动 read → edit → 最终回答，临时目录里文件内容正确 |
@@ -152,4 +171,4 @@ Rules:
 
 ## 不做
 
-多重编辑、unified diff、符号链接解析、沙箱、危险命令拦截（L5 按需补确认机制）、`ls` / `grep`（L5 按需补）。
+多重编辑、unified diff、TOCTOU 竞态防护、沙箱、危险命令拦截（L5 按需补确认机制）、`ls` / `grep`（L5 按需补）。

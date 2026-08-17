@@ -1,6 +1,6 @@
 # T18 · REPL 与中止贯穿
 
-> 课：L4 · 规格：[specs/04-usable.md「REPL」「中止」](../specs/04-usable.md) · 预算：110 行 · 前置：T17
+> 课：L4 · 规格：[specs/04-usable.md「1. REPL 与中止」](../specs/04-usable.md) · 预算：110 行 · 前置：T17
 
 ## 目标
 

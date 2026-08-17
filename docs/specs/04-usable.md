@@ -26,7 +26,7 @@ export async function startRepl(opts: { cwd: string; sessionFile?: string; resum
 ```
 
 - `node:readline/promises` 循环，提示符 `> `
-- 斜杠命令：`/exit`、`/reset`、`/tokens`（打印当前上下文用量）、`/tools`（列工具）
+- 斜杠命令：`/exit`（或 Ctrl+D）、`/clear`（清空历史，保留 system）、`/history`（打印消息条数与估算 token）、`/save <name>`（另存会话）。未知命令给提示，**不要当成普通输入发给模型**
 - 流式输出：正文直接写 stdout；思考用暗色包裹（`\x1b[2m`），可用 `--no-thinking` 关掉
 - 工具调用打印一行 `· read(path=src/a.ts)`，结束后打印耗时
 
@@ -48,14 +48,17 @@ SIGINT → controller.abort()
 最小 append-only JSONL，一行一条消息：
 
 ```ts
-export function appendMessage(file: string, msg: Message): Promise<void>;   // JSON.stringify + "\n"
-export function loadMessages(file: string): Promise<Message[]>;             // 逐行 parse，跳过坏行
+export function appendMessage(file: string, msg: Message): void;   // appendFileSync，JSON.stringify + "\n"
+export function loadSession(file: string): Message[];              // 逐行 parse，跳过坏行；文件不存在返回 []
 ```
+
+**同步 API**，不是 `Promise`。理由不是省事：这两个函数唯一的卖点是「进程被 Ctrl+C 杀掉时已写入的部分完好」，而异步写在事件循环里排队，恰恰可能在退出时丢掉最后一条。同步 `appendFileSync` 让「写完即落盘」这件事在代码上是显然的，实现也更短。
 
 - 每条消息产生时立刻 append（不是退出时统一写，崩溃也不丢）
 - 读取时**跳过解析失败的行**并警告——崩溃可能留下半行
-- CLI 参数：`-s <file>` 指定会话文件，`-c` 续聊
-- 默认路径 `.agent/sessions/<timestamp>.jsonl`
+- CLI 参数：`-s <name>` 指定会话**名字**，`-c` 续聊
+- 路径由代码拼成 `.agent/sessions/<name>.jsonl`，**`-s` 不带后缀**（传 `x.jsonl` 会得到 `x.jsonl.jsonl`）
+- 默认名字是时间戳
 
 为什么 append-only：写入是 O(1) 且原子性好，崩溃最多丢最后一行。代价是没有分支、没有压缩历史。L5 会亲身体会这个代价。
 
@@ -64,8 +67,8 @@ export function loadMessages(file: string): Promise<Message[]>;             // �
 模型上下文 65536。超了服务端直接 400，整个会话作废——这是 L5 最容易踩的死法。
 
 ```ts
-export function estimateTokens(messages: Message[]): number;
-export function fitContext(messages: Message[], budget: number): Message[];
+export function estimateTokens(s: string): number;                          // 收字符串，可组合
+export function fitContext(messages: Message[], budget: number): Message[]; // 内部对每条消息套 estimateTokens
 ```
 
 **估算**：不引 tokenizer（零依赖原则），但系数要用实测值，不能拍脑袋。
@@ -95,8 +98,10 @@ export function estimateTokens(s: string): number {
 **裁剪策略**（简单但正确）：
 
 1. 永远保留 system prompt
-2. 永远保留最近 N 轮（默认 4 轮）
-3. 从最老的一轮开始丢弃，直到估算值低于 `budget`（默认 `contextWindow * 0.7`）
+2. 优先保留最近 4 轮；只有丢光更早的历史仍然超预算时才动它们。**最近一轮 user 消息是硬底线**，连它都放不下就返回 system + 该消息，让请求自然报错，不要静默返回空数组
+3. 从最老的一轮开始丢弃，直到估算值低于 `budget`（CLI 默认 24000，参数 `--context-budget`）
+
+预算默认值为什么不是 `65536 * 0.7`：估算本身有 ±20% 误差，模型还要留出生成空间，而超限的代价是整轮 400 作废。24000 大约是窗口的 37%，对 L5 的长任务实测够用；真不够时用 `--context-budget` 显式抬高，比默认值贴着上限安全。参数名刻意不叫 `--max-tokens`——那是 OpenAI 的生成长度上限，撞名会让人和模型都误解。
 4. **丢弃必须成组**：一条 assistant(tool_calls) 和它对应的所有 `role: "tool"` 消息要么都留要么都丢。只丢一半会产生孤儿 `tool_call_id`，服务端报 400
 5. 在裁剪位置插入一条 `{ role: "system", content: "[earlier conversation trimmed]" }`
 
@@ -105,7 +110,10 @@ export function estimateTokens(s: string): number {
 ## 4. 重试（`retry.ts`）
 
 ```ts
-export async function withRetry<T>(fn: () => Promise<T>, opts?: { retries?: number; signal?: AbortSignal }): Promise<T>;
+export async function withRetry<T>(
+  fn: (attempt: number) => Promise<T>,
+  opts?: { retries?: number; baseMs?: number; signal?: AbortSignal },
+): Promise<T>;
 ```
 
 - 重试：网络错误、5xx、429

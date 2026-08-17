@@ -18,16 +18,16 @@
 把相对路径解析成绝对路径，并保证它在 `cwd` 内，越界抛错。
 
 - 必须 `path.resolve` **之后**再比较，不能只检查字符串里有没有 `..`（`a/../../b` 这类要靠解析才能识破）。
-- 比较时给 `cwd` 补上分隔符再做前缀匹配，否则 `/work` 会误放 `/workspace`。
+- 用 `path.relative` 判断（`rel.startsWith("..") || path.isAbsolute(rel)`），不要用字符串 `startsWith(cwd)`，否则 `/work` 会误判 `/work-evil`。
 - Windows 上做**大小写不敏感**比较。
-- 拒绝符号链接逃逸：对已存在的路径用 `fs.realpathSync` 再校验一次（路径不存在时跳过，因为 `write` 要能创建新文件）。
+- 拒绝符号链接逃逸：对已存在的路径用 `fs.realpathSync` 再校验一次（路径不存在时跳过，因为 `write` 要能创建新文件）。这一条比 spec 03 早先的口径更严——**它是刻意加的**，因为只做 `path.relative` 的话，工作目录里一个指向外部的软链就能让所有约束失效，而这几行成本极低。
 - 错误信息统一：`path escapes workspace: <原始输入>`。
 
 ### `truncate(s, maxLines = 200, maxBytes = 20_000): string`
 
-超限时截断并**明确告知**，例如 `\n... [truncated, 843 more lines]`。
+超限时截断并**明确告知**，例如 `[truncated: showing first 200 of 12043 lines]`。
 
-为什么是 200 行 / 20KB：按实测 TS 代码约 3.3 字符/token，20KB ≈ 6000 token。一次 `read` 就吃掉 32K 上下文的 18%，再多几次工具调用就该裁剪历史了。宁可让模型分次读，也不要一次喂爆。
+为什么是 200 行 / 20KB：按 [spec 04 实测](../specs/04-usable.md)的分词比例（代码约 3.7 字符/token），20KB 代码约 5400 token，占 64K 上下文的 **8%**。放宽到 50KB 的话，一次 `read` 就吃掉 20% 以上，agent 读三四个文件就没法干活了。上下文是这门课最稀缺的资源，阈值要按 token 占比来定，不能凭感觉写个整数。
 
 **截断必须显式告知模型**——静默截断会让它以为文件就这么长，然后基于残缺内容改代码。
 

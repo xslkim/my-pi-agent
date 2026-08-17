@@ -24,7 +24,7 @@ Claude Code、Cursor、pi，剥开都是这几件套：读文件、写文件、�
 ```ts
 read:  fs.readFile(args.path, "utf8")
 write: fs.writeFile(args.path, args.content)
-edit:  content.replace(args.oldText, args.newText)
+edit:  content.replace(args.old_string, args.new_string)
 bash:  exec(args.command)
 ```
 
@@ -65,12 +65,14 @@ if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`path escapes 
 
 文件里有三处 `const x = 1`，让 agent 改其中一处。`String.replace` 只替换第一个匹配。改错了，而且**没有任何报错**。
 
-修，也是本课最重要的一条规则：**oldText 必须在文件中唯一，否则拒绝执行。**
+修，也是本课最重要的一条规则：**old_string 必须在文件中唯一，否则拒绝执行。**
 
 ```ts
-const count = content.split(oldText).length - 1;
-if (count === 0) throw new Error("oldText not found in file");
-if (count > 1) throw new Error(`oldText appears ${count} times; include more surrounding context to make it unique`);
+const count = content.split(old_string).length - 1;
+if (count === 0) throw new Error(`old_string not found in ${p}`);
+if (count > 1 && !replace_all)
+  throw new Error(`old_string found ${count} times in ${p} (lines ${lines.join(", ")}). ` +
+                  `Provide more surrounding context to make it unique, or set replace_all.`);
 ```
 
 注意错误信息里那句 "include more surrounding context"——它是写给模型看的。模型读到后会自己扩大匹配范围重试。**好的错误信息是 agent 的一部分。**
@@ -109,7 +111,7 @@ C:\Program Files\Git\bin\bash.exe                         ← Git Bash，我们�
 You are a coding agent working in ${cwd}.
 - Read a file before editing it. Never guess its contents.
 - Prefer `edit` over `write` for existing files.
-- `edit` requires oldText to appear exactly once. If it fails, read more context and retry.
+- `edit` requires old_string to appear exactly once. If it fails, read more context and retry.
 - All paths must stay inside the workspace.
 - Explain what you changed after you finish.
 ```

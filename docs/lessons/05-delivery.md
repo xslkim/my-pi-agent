@@ -34,7 +34,7 @@
 
 **在放 agent 进场之前，先写验收脚本。** 这个顺序不能反。
 
-`test/login-app.smoke.ts` 起服务、按流程打接口、检查状态码和 cookie，10 条断言：注册成功、重复注册 409、密码错 401 且不发 cookie、登录成功发 HttpOnly cookie、带 cookie 拿到用户名、不带 cookie 401、登出成功、登出后失效、首页返回含表单的 HTML，以及最后一条——
+`acceptance/login-app.smoke.ts` 起服务、按流程打接口、检查状态码和 cookie，10 条断言：注册 201、重复注册 409、密码错 401 且不发 cookie、登录 200 发 HttpOnly + SameSite=Strict cookie、带 cookie 拿到用户名、不带 cookie 401、登出 200、登出后失效、首页返回含表单的 HTML，以及最后一条——
 
 **第 10 条：直接搜 `data.db`，不能出现明文密码。**
 
@@ -44,20 +44,24 @@
 
 这是本课的核心规则，也是一个技术教学点。我们上两道锁：
 
-1. **第 3 课的路径约束天然生效**。agent 的 cwd 是 `demo/login-app/`，`resolveInside` 会拒绝任何指向 `test/` 的文件工具调用。
-2. **校验和兜底**。因为 `bash` 工具能用绝对路径绕过第一道锁——这是我们在第 3 课练习题里就点破的缺口。所以每轮验收前后比对 `sha256(test/login-app.smoke.ts)`，不一致就作废本次交付。基线值 commit 在 `test/login-app.smoke.sha256`，比对脚本 `test/verify-lock.ts` 同样在 agent 够不到的地方。
+1. **第 3 课的路径约束天然生效**。agent 的 cwd 是 `demo/login-app/`，`resolveInside` 会拒绝任何指向 `acceptance/` 的文件工具调用。
+2. **校验和兜底**。因为 `bash` 工具能用绝对路径绕过第一道锁——这是我们在第 3 课练习题里就点破的缺口。所以每轮验收前比对两份考卷的 sha256，不一致就作废本次交付。基线值 commit 在 `acceptance/lock.sha256`，比对脚本 `acceptance/verify-lock.ts` 同样在 agent 够不到的地方。
+
+考卷是两份：冒烟测试（怎么算过）和 `acceptance/task-prompt.md`（考的是什么）。后者单独成文件，是因为重跑时要求任务描述**逐字相同**——靠人从课件里摘抄不可靠，交给文件和校验和才可靠。
+
+顺带一个工程细节值得讲：这些文件刻意**不放 `test/`**。`node --test` 会把 `test/` 下每个 `.ts` 都当测试跑，冒烟测试放进去会让默认测试集从此常红（应用还不存在），于是「全绿」这个信号就废了。**一个永远是红的测试等于没有测试。**
 
 对比这两道锁本身就是教学内容：**声明式的路径约束挡不住一个能执行任意命令的工具。** 这正是 pi 要做沙箱和权限确认的原因，也是所有 coding agent 产品最难的部分。
 
 ## 三、裸跑（30 分钟，全程录屏）
 
 ```bash
-node src/cli.ts --cwd demo/login-app -s l5-run1.jsonl --max-steps 30
+node src/cli.ts --cwd demo/login-app -s l5-run1 --max-steps 30 "$(cat acceptance/task-prompt.md)"
 ```
 
-粘进任务 prompt，然后**不要干预**。看着它工作，记录一切。
+然后**不要干预**。看着它工作，记录一切。
 
-（用 `-s` 开新会话而不是 `-c` 续聊——每一轮都从零开始，重跑时换个文件名 `l5-run2.jsonl`。）
+（`-s` 收的是会话名字、不带后缀；开新会话而不是 `-c` 续聊——每一轮都从零开始，重跑时换成 `l5-run2`。）
 
 课堂上把这段做成「共同观察」：让学员预测下一步它会干什么，再看它实际干了什么。预测失败的地方，就是我们对 agent 理解不足的地方。
 
@@ -74,11 +78,11 @@ node src/cli.ts --cwd demo/login-app -s l5-run1.jsonl --max-steps 30
 |---|---|---|
 | 反复 `read` 猜文件名，或直接覆盖已有文件 | 没有 `ls`，agent 看不见目录 | 补 `ls` 工具 |
 | 想找某个函数，用 `bash grep`，Windows 上行为不一致 | 没有 `grep` 工具 | 补 `grep` 工具 |
-| 第 10 步被 `maxSteps` 拦下，任务只做了一半 | 上限对真实任务太小 | 提到 30，并在 prompt 里要求「一次调用做完一件完整的事」 |
-| 第 15 轮开始报 400 | 上下文吃满 | 把第 4 课的 `fitContext` 真正接进 loop |
-| `edit` 报「匹配到 3 处」后原样重试，卡死 | 错误信息不够帮它定位 | 错误里附上匹配位置的行号 |
-| 说「已完成」但服务根本起不来 | 没有自验证要求 | prompt 加一条：完成前必须跑一次 `node --check` 或启动服务 |
-| 敢跑 `rm -rf` | 没有危险命令确认 | `bash` 加危险模式匹配 + 交互确认 |
+| 步数用光，任务只做了一半 | 默认上限对真实任务太小 | `--cwd` 模式默认提到 30，prompt 要求「一次调用做完一件完整的事」 |
+| 最后几步还在做枝节 | 它不知道快没步数了 | 剩余 ≤ 3 步时注入一次收敛提醒 |
+| `edit` 找不到 `old_string` 后原样重试 | 只说「没找到」，帮不上定位 | 补一次行级近似匹配，提示最接近的行与行号（多处匹配的行号第 3 课已经有了） |
+| 说「已完成」但服务根本起不来 | 没有自验证要求 | prompt 加一条：完成前必须跑一次 `node --check` 或启动服务，并附上输出 |
+| 敢跑 `rm -rf` | 没有危险命令确认 | `bash` 加危险模式匹配；REPL 下问一句，单发模式直接拒绝 |
 
 **观察要点**：多数失败不是「模型不够聪明」，而是**我们没给它必要的感官和护栏**。一个看不见目录的 agent 就像蒙着眼睛的木匠。这个认识比任何 prompt 技巧都值钱。
 
@@ -86,7 +90,9 @@ node src/cli.ts --cwd demo/login-app -s l5-run1.jsonl --max-steps 30
 
 按记录表补能力，预算 **≤ 200 行**，每补一项配一个回归测试。
 
-优先级排序的方法也值得讲：**先补「感官」（ls / grep），再补「耐力」（maxSteps / 上下文），最后补「护栏」（危险命令确认）。** 因为看不见的 agent 无论多有耐力都是瞎撞。
+优先级排序的方法也值得讲：**先补「感官」（ls / grep），再补「耐力」（步数 / 上下文），最后补「护栏」（危险命令确认）。** 因为看不见的 agent 无论多有耐力都是瞎撞。
+
+还有一条纪律要当场立起来：**只补 run1 记录里真实出现过的问题。** 表里预判了七项，但没被观察到的就不做——否则我们是在给想象中的 agent 加固，这跟凭直觉优化性能一样不可靠。
 
 超预算怎么办？砍功能，不许突破 1400 行总量。这个纪律很重要——**agent 的能力边界应该来自设计选择，而不是无节制堆代码。** 学员以后在真实项目里会不断面对这个取舍。
 
@@ -94,8 +100,9 @@ node src/cli.ts --cwd demo/login-app -s l5-run1.jsonl --max-steps 30
 
 ```bash
 rm -rf demo/login-app/*
-node src/cli.ts --cwd demo/login-app -s l5-run2.jsonl --max-steps 30
-node --test test/verify-lock.ts test/login-app.smoke.ts
+node src/cli.ts --cwd demo/login-app -s l5-run2 --max-steps 30 "$(cat acceptance/task-prompt.md)"
+node acceptance/verify-lock.ts
+node --test acceptance/login-app.smoke.ts
 ```
 
 **每一轮都必须从空目录重新开始。** 否则测的是「人 + agent」的合作成果，不是 agent 的能力。

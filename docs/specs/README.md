@@ -2,7 +2,9 @@
 
 开发时看这里。每篇包含：目标、交付物与行数预算、数据结构、核心实现、测试用例、验收、不做什么。
 
-总纲见 [../teaching-agent-plan.md](../teaching-agent-plan.md)。课程脚本见 [../lessons/](../lessons/)。
+总纲见 [../teaching-agent-plan.md](../teaching-agent-plan.md)。可执行任务见 [../tasks/](../tasks/)（每课的 spec 拆成 5 个任务）。课程脚本见 [../lessons/](../lessons/)。
+
+**spec 与 task 冲突时，以最终实现为准，并回写 spec。** task 层可以细化 spec，但两层不允许长期各说一套。
 
 | 课 | 文档 | 交付 | 新增预算 | 累计 | Tag |
 |---|---|---|---|---|---|
@@ -39,4 +41,4 @@
 | `src/repl.ts` `session.ts` `context.ts` `retry.ts` | L4 | — |
 | `src/tools/ls.ts` `grep.ts` | L5 | — |
 | `test/fake-llm.ts` | L1 | 全程复用 |
-| `test/login-app.smoke.ts` | L5 | **锁定，不可改** |
+| `acceptance/login-app.smoke.ts` `task-prompt.md` | L5 | **锁定，不可改** |

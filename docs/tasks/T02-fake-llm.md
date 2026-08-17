@@ -42,6 +42,8 @@ export async function startFakeLLM(script: FakeScript): Promise<FakeServer>;
 export function sliceBytes(sse: string, size: number): string[];
 ```
 
+- **不能有顶层副作用**（不要在模块顶层起服务、不要 `console.log`）。`node --test` 会把 `test/` 下每个 `.ts` 都当测试文件执行一遍，包括这个纯工具模块；有副作用就会在每次跑测试时莫名启动一个服务。
+
 ## 验收
 
 ```bash
