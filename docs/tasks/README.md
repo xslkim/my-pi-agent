@@ -51,7 +51,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 |---|---|---|---|---|---|
 | [T00](T00-scaffold.md) | 仓库骨架与零依赖验证 | — | 0 | — | done |
 | [T01](T01-types.md) | 核心类型定义 | L1 | 60 | T00 | done |
-| [T02](T02-fake-llm.md) | 假模型服务器 | L1 | 0 | T01 | todo |
+| [T02](T02-fake-llm.md) | 假模型服务器 | L1 | 0 | T01 | done |
 | [T03](T03-sse-client.md) | SSE 解析与 streamChat | L1 | 120 | T02 | todo |
 | [T04](T04-cli-oneshot.md) | 渲染与单发 CLI | L1 | 100 | T03 | todo |
 | [T05](T05-tool-registry.md) | Tool 接口与参数校验 | L2 | 70 | T04 | todo |
