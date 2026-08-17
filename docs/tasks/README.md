@@ -63,7 +63,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T11](T11-read-write.md) | read / write 工具 | L3 | 85 | T10 | done |
 | [T12](T12-edit.md) | edit 工具（唯一匹配） | L3 | 60 | T11 | done |
 | [T13](T13-bash.md) | bash 工具（跨平台） | L3 | 90 | T12 | done |
-| [T14](T14-coding-agent.md) | system prompt + `--cwd` | L3 | 40 | T13 | todo |
+| [T14](T14-coding-agent.md) | system prompt + `--cwd` | L3 | 40 | T13 | done |
 | [T15](T15-context.md) | token 估算与上下文裁剪 | L4 | 70 | T14 | todo |
 | [T16](T16-session.md) | JSONL 会话持久化 | L4 | 60 | T15 | todo |
 | [T17](T17-retry.md) | 请求重试 | L4 | 40 | T16 | todo |
