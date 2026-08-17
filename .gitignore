@@ -1,0 +1,12 @@
+node_modules/
+
+# L4 会话文件
+.agent/
+*.jsonl
+
+# L3/L4 演示用临时工作目录
+demo/tmp/
+
+# L5 agent 产出的数据库
+*.db
+*.db-journal

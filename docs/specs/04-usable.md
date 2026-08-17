@@ -68,7 +68,29 @@ export function estimateTokens(messages: Message[]): number;
 export function fitContext(messages: Message[], budget: number): Message[];
 ```
 
-**估算**：`Math.ceil(chars / 3)`。中文约 1 token/字、英文约 1 token/4 字符，取 3 是保守折中。不引 tokenizer 依赖（零依赖原则），估算偏保守即可。
+**估算**：不引 tokenizer（零依赖原则），但系数要用实测值，不能拍脑袋。
+
+本机对 Qwen3.8 实测（用 `max_tokens: 1` 请求读 `usage.prompt_tokens`，减去约 12 token 的对话模板开销）：
+
+| 文本 | 实测 | 折合 |
+|---|---|---|
+| 中文散文 97 字 | 56 token | **0.58 token/字** |
+| TypeScript 代码 249 字符 | 68 token | **3.7 字符/token** |
+
+所以：
+
+```ts
+const CJK = /[\u3000-\u303f\u4e00-\u9fff\uff00-\uffef]/g;
+export function estimateTokens(s: string): number {
+  const cjk = (s.match(CJK) ?? []).length;
+  return Math.ceil(cjk * 0.7 + (s.length - cjk) / 3.5);   // 实测 0.58 / 3.7，各留约 20% 余量
+}
+```
+
+两个常见的错误取值，都别用：
+
+- `chars / 3` 一刀切——对中文低估约 1.8 倍。这门课全程中文交互，低估意味着 `fitContext` 以为还有余量，实际已经逼近 65536。**为了避免 400 写的裁剪，反而保证了会 400。**
+- CJK 一律按 1 token/字——比实测高 1.7 倍。安全但浪费：会在真实用量只有 60% 时就开始裁剪，L5 那种长任务经不起这么糟蹋。
 
 **裁剪策略**（简单但正确）：
 

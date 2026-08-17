@@ -18,14 +18,16 @@
 ## 环境（5 分钟）
 
 ```bash
-node -v          # 需要 >= 23，本课在 v25.2.1 验证
+node -v          # 需要 >= 23.6（类型剥离从 23.6 起默认开启），本课在 v25.2.1 验证
 export LLM_BASE_URL="http://192.168.3.28:8080/v1"
 export LLM_API_KEY="sk-local-qwen36"
 export LLM_MODEL="qwen3.8-27b"
 curl -s $LLM_BASE_URL/models -H "Authorization: Bearer $LLM_API_KEY"
 ```
 
-看到 `qwen3.8-27b` 就绪。整个项目**零依赖**：Node 25 能直接运行 `.ts`，测试用内置的 `node --test`，不需要 npm install 任何东西。
+看到 `qwen3.8-27b` 就绪。这三个环境变量**必填**，代码里不给默认值——不把内网 IP 和 key 硬编码进源码，换机器只改环境变量。
+
+整个项目**零依赖**：Node 能直接运行 `.ts`，测试用内置的 `node --test`，不需要 npm install 任何东西。
 
 ## 课堂流程
 
@@ -102,6 +104,18 @@ export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent
 ```
 
 为什么用生成器而不是回调：`for await` 天然支持提前 `break`（用户按 Ctrl+C），也不用自己管背压。第 4 课的中止功能会因此便宜很多。
+
+**这里还埋着一个只有看真实字节才会发现的坑。** 把流的最后几块打出来：
+
+```
+data: {"choices":[{"finish_reason":"stop","index":0,"delta":{}}], ...}
+data: {"choices":[],"usage":{"prompt_tokens":14,"completion_tokens":10,...}}
+data: [DONE]
+```
+
+`finish_reason` 和 `usage` **不在同一块里**，而且带 usage 的那块 `choices` 是空数组。所以「看到 finish_reason 就发 done 并带上 usage」永远拿不到 usage——第 4 课要打印每轮 token 用量时才会发现，那时候已经很难联想到是这里的问题。正确做法是把两者先存起来，流结束时再统一发 `done`。
+
+这也是本课想传达的态度：**协议要看真实字节，不要看想象。**
 
 然后 `src/render.ts` 把 `thinking` 事件用暗色输出、`text` 正常输出，`src/cli.ts` 串起来。
 

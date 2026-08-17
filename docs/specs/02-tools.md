@@ -54,7 +54,18 @@ export interface JsonSchema {
 
 ### 1. tool_call 增量拼接（本课第一个坑）
 
-模型的工具调用是流式吐出来的，`arguments` 是**字符串碎片**，要按 `index` 累加：
+模型的工具调用是流式吐出来的。下面是**本机对真实服务的抓包**（已省略无关字段）：
+
+```
+delta: {"role":"assistant","content":null}
+delta: {"tool_calls":[{"index":0,"id":"SQG4ApJz...","type":"function","function":{"name":"calculator","arguments":"{"}}]}
+delta: {"tool_calls":[{"index":0,"function":{"arguments":"\"a\":"}}]}
+delta: {"tool_calls":[{"index":0,"function":{"arguments":"2"}}]}
+delta: {"tool_calls":[{"index":0,"function":{"arguments":"1"}}]}
+delta: {"tool_calls":[{"index":0,"function":{"arguments":",\"b\":"}}]}
+```
+
+注意：只有**第一块**带 `id` 和 `name`，后续块只有 `index` 和 `arguments` 碎片，碎片可以细到单个字符（`"2"`、`"1"` 是分两块来的）。所以要按 `index` 累加：
 
 ```ts
 // src/loop.ts 内的收集器
@@ -133,7 +144,7 @@ for step in 1..maxSteps:
 - **`maxSteps` 必须有**。模型会陷入「反复调同一个工具」的循环，没有上限就把 64K 上下文烧光，然后报 400。
 - **工具异常要捕获**，转成 `Error: ...` 文本回给模型，而不是崩掉整个进程。
 - **assistant 消息必须带 `tool_calls` 一起回传**，否则下一轮请求里 `role: "tool"` 消息会因为找不到对应的 `tool_call_id` 被服务端拒绝。
-- 工具**串行执行**即可（并行留到 L5 按需）。
+- 工具**串行执行**即可。并行不进主线，留作练习（[lesson 02 练习 4](../lessons/02-tools.md#练习)）——它带来的竞态、事件顺序和错误聚合会淹没这一课的主题。
 
 ### 4. calculator 工具
 

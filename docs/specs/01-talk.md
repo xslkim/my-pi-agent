@@ -14,8 +14,10 @@
 | `src/llm.ts` | `streamChat()`：构造请求 + 解析 SSE | 120 |
 | `src/render.ts` | 把流事件打到终端 | 40 |
 | `src/cli.ts` | 读 argv 与环境变量，跑一次对话 | 60 |
-| `test/fake-llm.ts` | 假模型服务器（回放 SSE 脚本） | 80 |
-| `test/llm.test.ts` | SSE 解析测试 | — |
+| `test/fake-llm.ts` | 假模型服务器（回放 SSE 脚本） | 80（不计预算） |
+| `test/llm.test.ts` | SSE 解析测试 | 不计预算 |
+
+> 预算规则：**只算 `src/`，`test/` 不计**。本课 `src/` 合计 280 ≤ 300。全课统一此口径。
 
 ## 数据结构
 
@@ -113,32 +115,59 @@ async function* parseSSE(body: ReadableStream<Uint8Array>): AsyncGenerator<Strea
 2. **`decode(chunk, { stream: true })`**。多字节 UTF-8（中文）会跨 chunk 断开，不加 `stream: true` 会吐乱码。
 3. **`[DONE]` 不是 JSON**，先判断再 parse。
 
-### 事件映射
+### 事件映射（注意 `done` 必须延迟发出）
+
+**本机对真实服务抓包的结果**：`finish_reason` 和 `usage` 不在同一块里。
+
+```
+data: {"choices":[{"finish_reason":"stop","index":0,"delta":{}}], ...}          ← 先来，没有 usage
+data: {"choices":[],"usage":{"completion_tokens":10,"prompt_tokens":14,...}}    ← 后来，choices 是空数组
+data: [DONE]
+```
+
+所以「看到 `finish_reason` 就立刻 yield `done` 并带上 `chunk.usage`」是错的——那一刻 usage 还是 `undefined`，而真正的 usage 块因为没有 `choices[0]` 会被整个忽略。L4 要求「每轮打印 token 用量」，这个 bug 会让用量永远为空。
+
+正确做法：把 `finishReason` 和 `usage` 先存起来，**流结束时才发 `done`**。
 
 ```ts
+// parseSSE 内部维护两个局部变量
+let finishReason: string | undefined;
+let usage: Usage | undefined;
+
 function* toEvents(chunk: any): Generator<StreamEvent> {
-  const choice = chunk.choices?.[0];
-  if (chunk.usage && !choice) { /* 末块只带 usage，记下备用 */ }
+  const choice = chunk.choices?.[0];          // usage 块的 choices 是 []，这里会是 undefined
+  if (chunk.usage) usage = chunk.usage;
   const delta = choice?.delta;
   if (delta?.content) yield { type: "text", delta: delta.content };
   if (delta?.reasoning_content) yield { type: "thinking", delta: delta.reasoning_content };
-  if (choice?.finish_reason) {
-    yield { type: "done", finishReason: choice.finish_reason, usage: chunk.usage };
-  }
+  if (choice?.finish_reason) finishReason = choice.finish_reason;
 }
+
+// 收到 [DONE] 或流自然结束时统一收尾
+yield { type: "done", finishReason: finishReason ?? "stop", usage };
 ```
 
-`reasoning_content` 是 llama.cpp 的思考字段（pi 还会兼容 `reasoning` / `reasoning_text`，我们只服务一个端点，只认这一个）。
+两个细节：
+
+- 真实服务的首块是 `delta: {"role":"assistant","content":null}`——`content` 是 **`null` 而非缺失**，`if (delta?.content)` 能正确跳过（`null` 是 falsy），但不要写成 `if ("content" in delta)`。
+- `reasoning_content` 是 llama.cpp 的思考字段（pi 还兼容 `reasoning` / `reasoning_text`，我们只服务一个端点，只认这一个）。
 
 ### 配置
 
-`src/cli.ts` 读三个环境变量，给出默认值并在缺失时报可读的错：
+三个环境变量**必填，不设默认值**，缺失时报可读的错：
 
 ```ts
-const BASE_URL = process.env.LLM_BASE_URL ?? "http://192.168.3.28:8080/v1";
-const API_KEY = process.env.LLM_API_KEY ?? "sk-local-qwen36";
-const MODEL = process.env.LLM_MODEL ?? "qwen3.8-27b";
+function required(name: string): string {
+  const v = process.env[name];
+  if (!v) throw new Error(`missing env ${name}; see README for the LAN endpoint`);
+  return v;
+}
+const BASE_URL = required("LLM_BASE_URL");
+const API_KEY = required("LLM_API_KEY");
+const MODEL = required("LLM_MODEL");
 ```
+
+为什么不给默认值：一是给了默认值，「缺失报错」的分支就永远走不到，等于写了句空话；二是不把内网 IP 和 API key 硬编码进源码，换机器、换模型只改环境变量。具体取值放在仓库根 README 里。
 
 ## 假模型服务器
 
@@ -163,6 +192,8 @@ export async function startFakeLLM(script: FakeScript): Promise<{ url: string; c
 | **跨 chunk 切分** | 同一事件被切成 2/3 段，结果不变 |
 | **中文跨 chunk** | UTF-8 字节在中间断开，不出现乱码 |
 | thinking | `reasoning_content` 产出 `thinking` 事件，与 `text` 分离 |
+| **usage 在独立末块** | 脚本为「finish_reason 块 → `choices:[]` 的 usage 块 → `[DONE]`」，断言 `done` 事件同时带 `finishReason` 和 `usage` |
+| `content: null` | 首块 `delta.content` 为 `null` 时不产生空 `text` 事件 |
 | `[DONE]` | 正常终止，不抛 JSON 解析错 |
 | HTTP 500 | 抛出含状态码与响应体的错误 |
 | abort | `AbortController.abort()` 后生成器结束 |

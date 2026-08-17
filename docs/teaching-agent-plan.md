@@ -31,7 +31,7 @@ import pi 学员只能看见胶水层，看不见 SSE 怎么切、tool_call 增�
 
 ## 2. 零依赖运行环境（已实测）
 
-本机 `node v25.2.1` / `npm 11.6.2`。以下能力已在本机验证通过：
+要求 **Node >= 23.6**（类型剥离从 23.6 起默认开启；22.x 需要 `--experimental-strip-types` flag）。本机 `node v25.2.1` / `npm 11.6.2`，以下能力已在本机验证通过：
 
 | 能力 | 验证结果 | 用途 |
 |---|---|---|
@@ -63,13 +63,15 @@ import pi 学员只能看见胶水层，看不见 SSE 怎么切、tool_call 增�
 | 思考 | 默认开，增量在 `reasoning_content` 字段 |
 | 工具调用 | 服务已开 `--jinja`，走标准 `tools` / `tool_calls` |
 
-环境变量：
+环境变量（**代码里不设默认值**，缺失即报错；避免把内网 IP 和 key 硬编码进源码）：
 
 ```bash
 export LLM_BASE_URL="http://192.168.3.28:8080/v1"
 export LLM_API_KEY="sk-local-qwen36"
 export LLM_MODEL="qwen3.8-27b"
 ```
+
+> 上面的地址、key 和下面引用的 `G:\LlmLocal\...` 都是本机自用环境。本仓库若要开源或分享，先把这几处替换成占位符。
 
 风险：单并发（第二路排队）；WSL 重启后需重跑 `expose-lan-8080.ps1`；长会话 prefill 变慢；勿暴露公网。
 
@@ -105,9 +107,11 @@ SSE 响应，每块 `data: {...}\n\n`，以 `data: [DONE]` 结束。每块里：
 
 累计约 **1400 行**，学员读得完。超预算就砍功能，不许膨胀。
 
+**预算口径：只算 `src/`，`test/` 不计。** 测试和假模型服务器不计入预算，否则会造成「为了省预算而少写测试」的反向激励。
+
 ### L1 · 让模型说话
 
-手写 `fetch` + SSE 解析。难点是**跨 chunk 的缓冲区切分**：一个 `data:` 事件可能被 TCP 切成两半，天真的 `chunk.split("\n\n")` 必错。产出 `src/llm.ts`（约 120 行）、`src/types.ts`、`src/cli.ts`。
+手写 `fetch` + SSE 解析。难点是**跨 chunk 的缓冲区切分**：一个 `data:` 事件可能被 TCP 切成两半，天真的 `chunk.split("\n\n")` 必错。产出 `src/types.ts`、`src/llm.ts`、`src/render.ts`、`src/cli.ts`，外加全程复用的 `test/fake-llm.ts`。
 
 ### L2 · 让模型动手
 
@@ -154,32 +158,45 @@ readline REPL、`Ctrl+C` 只中止当前轮（`AbortSignal` 要贯穿 fetch 和�
 ```
 my-pi-agent/
   pi/                        # submodule：参考实现，只读，不是依赖
+  README.md                  # 5 行：环境变量与入口，指向 docs/
   package.json               # dependencies: {} ；scripts 全用 node
   tsconfig.json              # 仅供 tsc --noEmit
+  .gitignore                 # .agent/、demo/tmp/、*.db
   src/
     types.ts                 # L1 消息/工具/事件类型
     llm.ts                   # L1 fetch + SSE 解析
     render.ts                # L1 终端输出
-    cli.ts                   # L1→L4 入口
+    cli.ts                   # L1→L5 入口（--cwd / -s / -c / --max-steps）
     loop.ts                  # L2 agent loop
+    prompt.ts                # L3 system prompt
+    repl.ts                  # L4 readline 循环与中止
+    session.ts               # L4 JSONL 持久化
+    context.ts               # L4 上下文预算
+    retry.ts                 # L4 请求重试
     tools/
       registry.ts            # L2 Tool 接口 + 运行时参数校验
       calculator.ts          # L2
       guard.ts               # L3 路径/截断/超时
       read.ts write.ts edit.ts bash.ts   # L3
       ls.ts grep.ts          # L5 按需补
-    session.ts               # L4 JSONL 持久化
-    context.ts               # L4 上下文预算
-  test/
+  test/                      # 不计入行数预算
     fake-llm.ts              # 自制假模型：node:http 回放 SSE 脚本
     *.test.ts                # node --test
     login-app.smoke.ts       # L5 锁定的验收脚本
-  demo/login-app/            # L5 agent 的产出目录
+    login-app.smoke.sha256   # L5 校验和基线（进版本库）
+    verify-lock.ts           # L5 校验和比对
+  demo/
+    login-app/               # L5 agent 的产出目录（data.db 不进库）
+    tmp/                     # L3/L4 演示用的临时工作目录
   docs/
     teaching-agent-plan.md   # 本文件
     specs/01..05-*.md        # 每课实现规格
     lessons/01..05-*.md      # 每课教学脚本
+    tasks/T00..T24-*.md      # 可执行任务，交给 agent 干活
+    runs/run1.md run2.md     # L5 两次跑的记录与复盘
 ```
+
+`.gitignore` 至少要有：`.agent/`（会话文件）、`demo/tmp/`、`demo/login-app/data.db`。否则 L4/L5 打 tag 时会把会话记录和数据库一起提交。
 
 命令：
 
@@ -194,12 +211,13 @@ npx tsc --noEmit              # 类型检查
 
 ## 6. 文档结构
 
-每课两篇，编号一一对应：
+三层，各有各的读者：
 
-- **[docs/specs/](specs/)** —— 实现规格。模块清单、函数签名、数据结构、测试用例、验收标准、行数预算。**开发时看这个。**
+- **[docs/specs/](specs/)** —— 实现规格。模块清单、函数签名、数据结构、测试用例、验收标准、行数预算。回答**为什么这么设计**。
+- **[docs/tasks/](tasks/)** —— 25 个可独立执行、可独立验收的任务，编号 T00–T24。回答**现在做什么、怎么算做完**。**干活时看这个，也是交给 agent 的输入。**
 - **[docs/lessons/](lessons/)** —— 教学脚本。目标、90 分钟课堂流程、直播编码步骤、故障注入、练习、pi 对照。**讲课时看这个。**
 
-顺序仍是**先实现后写课**：每课先按 spec 写代码并跑通，再回头写 lesson。
+顺序仍是**先实现后写课**：按 tasks 逐个做完并跑通验收，再回头写 lesson。
 
 ---
 

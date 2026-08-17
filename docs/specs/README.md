@@ -6,13 +6,15 @@
 
 | 课 | 文档 | 交付 | 新增预算 | 累计 | Tag |
 |---|---|---|---|---|---|
-| 1 | [01-talk.md](01-talk.md) | `llm.ts` `types.ts` `render.ts` `cli.ts` `fake-llm.ts` | ≤ 300 | 300 | `l1-talk` |
+| 1 | [01-talk.md](01-talk.md) | `llm.ts` `types.ts` `render.ts` `cli.ts`（+ `test/fake-llm.ts`，不计预算） | ≤ 300 | 300 | `l1-talk` |
 | 2 | [02-tools.md](02-tools.md) | `tools/registry.ts` `tools/calculator.ts` `loop.ts` | ≤ 250 | 550 | `l2-tools` |
 | 3 | [03-coding.md](03-coding.md) | `tools/guard.ts` `read/write/edit/bash.ts` `prompt.ts` | ≤ 350 | 900 | `l3-coding` |
 | 4 | [04-usable.md](04-usable.md) | `repl.ts` `session.ts` `context.ts` `retry.ts` | ≤ 300 | 1200 | `l4-usable` |
 | 5 | [05-delivery.md](05-delivery.md) | `tools/ls.ts` `tools/grep.ts` + 加固 | ≤ 200 | **1400** | `l5-delivery` |
 
 行数预算是硬约束。超了就砍功能，不许突破 1400 行总量——学员必须读得完每一行。
+
+**预算口径：只算 `src/`，`test/` 不计。** 测试和假模型服务器不计入，否则会出现「为了省预算而少写测试」的反向激励。
 
 ## 每课通用的完成标准
 

@@ -38,16 +38,17 @@
 
 ### 2. 第一个坑：arguments 是碎片（20 分钟）
 
-打印原始的 `tool_calls` 增量，学员会看到：
+打印原始的 `tool_calls` 增量。下面是**真实抓包**，不是示意：
 
 ```
-{"index":0,"id":"call_abc","function":{"name":"calculator","arguments":""}}
-{"index":0,"function":{"arguments":"{\"a\""}}
-{"index":0,"function":{"arguments":": 21, "}}
-{"index":0,"function":{"arguments":"\"b\": 2}"}}
+{"index":0,"id":"SQG4ApJz...","type":"function","function":{"name":"calculator","arguments":"{"}}
+{"index":0,"function":{"arguments":"\"a\":"}}
+{"index":0,"function":{"arguments":"2"}}
+{"index":0,"function":{"arguments":"1"}}
+{"index":0,"function":{"arguments":",\"b\":"}}
 ```
 
-参数是**一片一片吐出来的字符串**，而且只有第一片带 `id` 和 `name`。必须按 `index` 累加，全部收完再 `JSON.parse`。中途 parse 一定失败——`{"a"` 不是合法 JSON。
+参数是**一片一片吐出来的字符串**，只有第一片带 `id` 和 `name`。碎得超乎想象——`21` 这个数字是分成 `"2"` 和 `"1"` 两块来的。必须按 `index` 累加，全部收完再 `JSON.parse`。中途 parse 一定失败：`{"a":2` 不是合法 JSON，而且它**看起来像**一个合理的中间状态，这正是最容易写出「偶尔能跑」的 bug 的地方。
 
 让学员自己踩一次：先写「收到就 parse」的版本，看它炸掉。
 

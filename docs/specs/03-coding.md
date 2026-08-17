@@ -28,7 +28,7 @@
 export function resolveInside(cwd: string, p: string): string;
 
 /** 超长文本截断，保留头部并附带说明。 */
-export function truncate(text: string, maxLines = 500, maxBytes = 50_000): string;
+export function truncate(text: string, maxLines = 200, maxBytes = 20_000): string;
 
 /** 给 promise 加超时。 */
 export function withTimeout<T>(p: Promise<T>, ms: number, label: string): Promise<T>;
@@ -48,8 +48,10 @@ return abs;
 `truncate` 为什么必要：一个 5MB 的 `package-lock.json` 直接塞进 64K 上下文 = 立刻 400。截断后要**明确告诉模型被截断了**，否则它以为自己看到了全文：
 
 ```
-[truncated: showing first 500 of 12043 lines]
+[truncated: showing first 200 of 12043 lines]
 ```
+
+默认值为什么是 200 行 / 20KB：按 L4 实测的分词比例（代码约 3.7 字符/token），20KB 代码约 5400 token，占 64K 上下文的 **8%**；若放到 50KB，一次 `read` 就吃掉 20% 以上，agent 读三四个文件就没法干活了。上下文是这门课最稀缺的资源，截断阈值要按 token 占比来定，不能凭感觉写个整数。
 
 ## 四个工具
 
@@ -130,7 +132,7 @@ Rules:
 |---|---|
 | **路径越界** | `../../etc/passwd`、绝对路径、`..\\..\\` 全部被拒 |
 | 相似前缀目录 | cwd 为 `/work` 时，`/work-evil/x` 被拒 |
-| read 截断 | 1000 行文件默认只返回 500 行且带截断提示 |
+| read 截断 | 1000 行文件默认只返回 200 行且带截断提示 |
 | read 二进制 | 含 NUL 的文件返回 `[binary file...]` |
 | write 建目录 | 写 `a/b/c.txt` 会自动创建 `a/b` |
 | **edit 唯一匹配** | 出现 2 次时报错且**文件未被修改** |

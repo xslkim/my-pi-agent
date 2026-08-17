@@ -51,11 +51,13 @@ if (rel.startsWith("..") || path.isAbsolute(rel)) throw new Error(`path escapes 
 
 让 agent 读一个 `package-lock.json`（几 MB）。请求直接 400——超出 65536 上下文。整个会话报废。
 
-修：`truncate()`，默认 500 行 / 50KB。关键是截断后**必须告诉模型**：
+修：`truncate()`，默认 200 行 / 20KB。关键是截断后**必须告诉模型**：
 
 ```
-[truncated: showing first 500 of 12043 lines]
+[truncated: showing first 200 of 12043 lines]
 ```
+
+阈值不是拍脑袋定的：按实测的分词比例（代码约 3.7 字符/token），20KB 约 5400 token，占 64K 上下文的 8%；放到 50KB 就是 20% 以上，读三四个文件就没法干活了。**上下文是这门课最稀缺的资源，任何往里塞东西的地方都要按 token 占比算账。**
 
 否则模型以为自己看完了全文，然后基于残缺信息做判断——比报错更糟。
 
@@ -109,6 +111,7 @@ You are a coding agent working in ${cwd}.
 - Prefer `edit` over `write` for existing files.
 - `edit` requires oldText to appear exactly once. If it fails, read more context and retry.
 - All paths must stay inside the workspace.
+- Explain what you changed after you finish.
 ```
 
 核心原则：**prompt 里说的每一条，代码里都必须真的强制。** 只在 prompt 里写「不要越界」而代码不检查，等于没写——模型会忘、会幻觉、会被绕过。反过来，代码强制了但 prompt 没说，模型会反复撞墙浪费轮次。
@@ -118,9 +121,11 @@ You are a coding agent working in ${cwd}.
 ### 5. 见真章（15 分钟）
 
 ```bash
-mkdir /tmp/demo && echo "hello world" > /tmp/demo/hello.txt
-node src/cli.ts --cwd /tmp/demo "把 hello.txt 里的 world 改成 pi，然后用命令确认改成功了"
+mkdir -p demo/tmp && echo "hello world" > demo/tmp/hello.txt
+node src/cli.ts --cwd demo/tmp "把 hello.txt 里的 world 改成 pi，然后用命令确认改成功了"
 ```
+
+演示目录用**仓库内的相对路径**，不用 `/tmp`。这一课刚讲完 Windows 路径的坑，自己就别再踩：Git Bash 会对 `/tmp` 做 MSYS 路径转换，传给 node 之后落到哪不可靠。
 
 观察它：`read` 看内容 → `edit` 改 → `bash cat` 验证 → 报告完成。
 

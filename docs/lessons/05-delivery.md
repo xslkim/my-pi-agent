@@ -45,17 +45,19 @@
 这是本课的核心规则，也是一个技术教学点。我们上两道锁：
 
 1. **第 3 课的路径约束天然生效**。agent 的 cwd 是 `demo/login-app/`，`resolveInside` 会拒绝任何指向 `test/` 的文件工具调用。
-2. **校验和兜底**。因为 `bash` 工具能用绝对路径绕过第一道锁——这是我们在第 3 课练习题里就点破的缺口。所以每轮验收前后比对 `sha256(test/login-app.smoke.ts)`，不一致就作废本次交付。
+2. **校验和兜底**。因为 `bash` 工具能用绝对路径绕过第一道锁——这是我们在第 3 课练习题里就点破的缺口。所以每轮验收前后比对 `sha256(test/login-app.smoke.ts)`，不一致就作废本次交付。基线值 commit 在 `test/login-app.smoke.sha256`，比对脚本 `test/verify-lock.ts` 同样在 agent 够不到的地方。
 
 对比这两道锁本身就是教学内容：**声明式的路径约束挡不住一个能执行任意命令的工具。** 这正是 pi 要做沙箱和权限确认的原因，也是所有 coding agent 产品最难的部分。
 
 ## 三、裸跑（30 分钟，全程录屏）
 
 ```bash
-node src/cli.ts --cwd demo/login-app -s l5.jsonl
+node src/cli.ts --cwd demo/login-app -s l5-run1.jsonl --max-steps 30
 ```
 
 粘进任务 prompt，然后**不要干预**。看着它工作，记录一切。
+
+（用 `-s` 开新会话而不是 `-c` 续聊——每一轮都从零开始，重跑时换个文件名 `l5-run2.jsonl`。）
 
 课堂上把这段做成「共同观察」：让学员预测下一步它会干什么，再看它实际干了什么。预测失败的地方，就是我们对 agent 理解不足的地方。
 
@@ -91,8 +93,9 @@ node src/cli.ts --cwd demo/login-app -s l5.jsonl
 ## 五、重跑与验收（30 分钟）
 
 ```bash
-rm -rf demo/login-app/* && node src/cli.ts --cwd demo/login-app
-node --test test/login-app.smoke.ts
+rm -rf demo/login-app/*
+node src/cli.ts --cwd demo/login-app -s l5-run2.jsonl --max-steps 30
+node --test test/verify-lock.ts test/login-app.smoke.ts
 ```
 
 **每一轮都必须从空目录重新开始。** 否则测的是「人 + agent」的合作成果，不是 agent 的能力。
