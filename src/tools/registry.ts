@@ -22,10 +22,7 @@ export type ValidateResult =
   | { ok: true; value: Record<string, unknown> }
   | { ok: false; error: string };
 
-/**
- * 最小校验器：只覆盖自家工具会用到的规则。错误信息是写给模型看的，
- * 必须具体到字段名，模型读到后会自行改正重试。
- */
+// 最小校验器：只覆盖自家工具会用到的规则。错误信息写给模型看，必须具体到字段名。
 export function validate(schema: JsonSchema, args: unknown): ValidateResult {
   if (typeof args !== "object" || args === null || Array.isArray(args)) {
     return { ok: false, error: "arguments must be an object" };
