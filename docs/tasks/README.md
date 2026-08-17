@@ -56,7 +56,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T04](T04-cli-oneshot.md) | 渲染与单发 CLI | L1 | 100 | T03 | done |
 | [T05](T05-tool-registry.md) | Tool 接口与参数校验 | L2 | 70 | T04 | done |
 | [T06](T06-calculator.md) | calculator 工具 | L2 | 40 | T05 | done |
-| [T07](T07-toolcall-stream.md) | tool_call 增量解析 | L2 | 15 | T06 | todo |
+| [T07](T07-toolcall-stream.md) | tool_call 增量解析 | L2 | 15 | T06 | done |
 | [T08](T08-agent-loop.md) | agent loop | L2 | 115 | T07 | todo |
 | [T09](T09-cli-loop.md) | CLI 接 loop + 冒烟 | L2 | 10 | T08 | todo |
 | [T10](T10-guard.md) | 约束层 guard | L3 | 75 | T09 | todo |
