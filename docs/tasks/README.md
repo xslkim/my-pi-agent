@@ -67,7 +67,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T15](T15-context.md) | token 估算与上下文裁剪 | L4 | 70 | T14 | done |
 | [T16](T16-session.md) | JSONL 会话持久化 | L4 | 60 | T15 | done |
 | [T17](T17-retry.md) | 请求重试 | L4 | 40 | T16 | done |
-| [T18](T18-repl.md) | REPL 与中止贯穿 | L4 | 110 | T17 | todo |
+| [T18](T18-repl.md) | REPL 与中止贯穿 | L4 | 110 | T17 | done |
 | [T19](T19-cli-args.md) | CLI 参数整合 + 冒烟 | L4 | 20 | T18 | todo |
 | [T20](T20-lock-acceptance.md) | **锁定验收脚本与任务 prompt** | L5 | 0 | T19 | todo |
 | [T21](T21-bare-run.md) | 裸跑 run1 与失败记录 | L5 | 0 | T20 | todo |
