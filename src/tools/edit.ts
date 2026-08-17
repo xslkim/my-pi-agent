@@ -5,16 +5,16 @@ import { resolveInside } from "./guard.ts";
 // 唯一匹配是 agent 编辑机制的安全根基：行号会漂移（上一步刚改过），
 // 唯一字符串匹配把「定位错误」变成可检测的失败，而不是静默改错地方。
 
+/** 所有匹配的起始行号（文件中的真实行号，供模型回来 read 定位）。 */
 function findLines(content: string, needle: string): number[] {
   const lines: number[] = [];
   let from = 0;
-  for (let i = 1; ; i++) {
+  for (;;) {
     const at = content.indexOf(needle, from);
-    if (at === -1) break;
-    lines.push(content.slice(0, at).split("\n").length); // 匹配起始行的真实行号
+    if (at === -1) return lines;
+    lines.push(content.slice(0, at).split("\n").length);
     from = at + 1;
   }
-  return lines;
 }
 
 export const edit: Tool = {
@@ -23,12 +23,7 @@ export const edit: Tool = {
     "Replace text in a file. old_string must match exactly once unless replace_all is true. Keep surrounding context to make it unique.",
   parameters: {
     type: "object",
-    properties: {
-      path: { type: "string" },
-      old_string: { type: "string" },
-      new_string: { type: "string" },
-      replace_all: { type: "boolean" },
-    },
+    properties: { path: { type: "string" }, old_string: { type: "string" }, new_string: { type: "string" }, replace_all: { type: "boolean" } },
     required: ["path", "old_string", "new_string"],
   },
   async execute(args, ctx) {
@@ -49,21 +44,17 @@ export const edit: Tool = {
       return `error: file not found: ${p}`;
     }
     const hits = findLines(content, old_string);
-    if (hits.length === 0) {
-      return `error: old_string not found in ${p}`;
-    }
+    if (hits.length === 0) return `error: old_string not found in ${p}`;
     if (hits.length > 1 && !replace_all) {
       // 行号 + 补上下文的指引都是写给模型的：它读到就能自愈
       return `error: old_string found ${hits.length} times in ${p} (lines ${hits.join(", ")}). Provide more surrounding context to make it unique, or set replace_all.`;
     }
     // 保持原换行风格：CRLF 文件别被悄悄改成 LF
-    const nl = content.includes("\r\n") && !new_string.includes("\r\n") && new_string.includes("\n")
+    const nl = content.includes("\r\n") && new_string.includes("\n") && !new_string.includes("\r\n")
       ? new_string.replaceAll("\n", "\r\n")
       : new_string;
-    const updated = replace_all
-      ? content.split(old_string).join(nl)
-      : content.replace(old_string, nl);
+    const updated = replace_all ? content.split(old_string).join(nl) : content.replace(old_string, nl);
     fs.writeFileSync(abs, updated);
-    return `edited ${p} (${replace_all ? hits.length : 1} replacement${replace_all ? "s" : ""} at line${replace_all ? "s" : ""} ${hits.join(", ")})`;
+    return `edited ${p} (${hits.length} replacement${hits.length > 1 ? "s" : ""} at line${hits.length > 1 ? "s" : ""} ${hits.join(", ")})`;
   },
 };
