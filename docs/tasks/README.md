@@ -61,7 +61,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T09](T09-cli-loop.md) | CLI 接 loop + 冒烟 | L2 | 10 | T08 | done |
 | [T10](T10-guard.md) | 约束层 guard | L3 | 75 | T09 | done |
 | [T11](T11-read-write.md) | read / write 工具 | L3 | 85 | T10 | done |
-| [T12](T12-edit.md) | edit 工具（唯一匹配） | L3 | 60 | T11 | todo |
+| [T12](T12-edit.md) | edit 工具（唯一匹配） | L3 | 60 | T11 | done |
 | [T13](T13-bash.md) | bash 工具（跨平台） | L3 | 90 | T12 | todo |
 | [T14](T14-coding-agent.md) | system prompt + `--cwd` | L3 | 40 | T13 | todo |
 | [T15](T15-context.md) | token 估算与上下文裁剪 | L4 | 70 | T14 | todo |
