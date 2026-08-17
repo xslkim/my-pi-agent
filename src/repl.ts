@@ -21,6 +21,7 @@ export async function startRepl(opts: {
   budget?: number;
   maxSteps?: number;
   noThinking?: boolean;
+  initial?: Message[]; // -c 续聊：从会话文件恢复的历史（没有则用 system 开新会话）
   input?: Readable;
   output?: Writable;
   interrupt?: EventEmitter; // 默认 process；测试注入后 emit("SIGINT") 模拟 Ctrl+C
@@ -29,7 +30,7 @@ export async function startRepl(opts: {
   const output = opts.output ?? process.stdout;
   const interrupt = opts.interrupt ?? process;
   const rl = readline.createInterface({ input, output });
-  const messages: Message[] = [{ role: "system", content: systemPrompt(opts.cwd) }];
+  const messages: Message[] = opts.initial?.length ? [...opts.initial] : [{ role: "system", content: systemPrompt(opts.cwd) }]; // -c 注入历史
 
   const queue: string[] = [];
   let lineWaiter: ((l: string) => void) | null = null;

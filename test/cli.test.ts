@@ -6,10 +6,32 @@ import os from "node:os";
 import path from "node:path";
 import { startFakeLLM } from "./fake-llm.ts";
 
-test("cli without prompt prints usage and exits 1", () => {
-  const r = spawnSync(process.execPath, ["src/cli.ts"], { encoding: "utf8" });
+test("--help exits 0 and documents every flag", () => {
+  const r = spawnSync(process.execPath, ["src/cli.ts", "--help"], { encoding: "utf8" });
+  assert.equal(r.status, 0);
+  const out = r.stdout;
+  for (const flag of ["--cwd", "--session", "-s", "--continue", "-c", "--max-steps", "--context-budget", "--no-thinking", "--yolo", "--help", "example:"]) {
+    assert.ok(out.includes(flag), `help must mention ${flag}`);
+  }
+});
+
+test("invalid numeric option exits 1", () => {
+  const env = { ...process.env, LLM_BASE_URL: "http://127.0.0.1:9/x", LLM_API_KEY: "k", LLM_MODEL: "m" };
+  const r = spawnSync(process.execPath, ["src/cli.ts", "hi", "--max-steps", "abc"], { encoding: "utf8", env });
+  assert.equal(r.status, 1);
+  assert.match(r.stderr, /invalid --max-steps/);
+});
+
+test("unknown option exits 1 with usage", () => {
+  const r = spawnSync(process.execPath, ["src/cli.ts", "hi", "--bogus"], { encoding: "utf8" });
   assert.equal(r.status, 1);
   assert.match(r.stderr, /usage/);
+});
+
+test("cli without prompt enters REPL, exits cleanly on EOF", () => {
+  const env = { ...process.env, LLM_BASE_URL: "http://127.0.0.1:9/x", LLM_API_KEY: "k", LLM_MODEL: "m" };
+  const r = spawnSync(process.execPath, ["src/cli.ts"], { encoding: "utf8", env, input: "" });
+  assert.equal(r.status, 0); // stdin 立即 EOF -> REPL 干净退出
 });
 
 test("cli with missing env exits 1 and names the variable", () => {

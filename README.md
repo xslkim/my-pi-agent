@@ -17,10 +17,17 @@ export LLM_BASE_URL="http://192.168.3.28:8080/v1"   # 局域网 llama.cpp
 export LLM_API_KEY="sk-local-qwen36"
 export LLM_MODEL="qwen3.8-27b"
 
-node src/cli.ts "你好"    # 单发
-node src/cli.ts           # REPL（L4 起）
-node --test               # 全部测试，离线可跑
-npx tsc --noEmit          # 类型检查
+node src/cli.ts "你好"                  # 单发
+node src/cli.ts                         # REPL（Ctrl+C 中止本轮，再按退出）
+node src/cli.ts "改一下" --cwd demo/tmp # 指定工作目录
+node src/cli.ts -s work                 # 会话存 .agent/sessions/work.jsonl
+node src/cli.ts -s work -c "接着说"     # 续聊
+npm test                                # 全部单元测试，离线可跑
+npx tsc --noEmit                        # 类型检查
 ```
+
+常用参数：`--cwd <dir>` 工作目录 · `-s/--session <name>` 会话名 · `-c/--continue` 续聊 ·
+`--max-steps <n>` 步数上限（默认 10）· `--context-budget <n>` 上下文预算（默认 24000）·
+`--no-thinking` 隐藏思考 · `--yolo` 跳过危险命令确认 · `-h/--help` 完整用法。
 
 三个环境变量必填，代码里不设默认值。上面的地址与 key 是本机自用环境，分享前请替换。
