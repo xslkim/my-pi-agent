@@ -1,5 +1,6 @@
-import { streamChat } from "./llm.ts";
-import { renderEvent } from "./render.ts";
+import { runAgent } from "./loop.ts";
+import { renderAgentEvent } from "./render.ts";
+import { calculator } from "./tools/calculator.ts";
 import type { Message } from "./types.ts";
 
 async function main(): Promise<void> {
@@ -13,8 +14,13 @@ async function main(): Promise<void> {
 
   const messages: Message[] = [{ role: "user", content: prompt }];
   try {
-    for await (const ev of streamChat({ messages, signal: controller.signal })) {
-      renderEvent(ev);
+    for await (const ev of runAgent({
+      messages,
+      tools: [calculator],
+      cwd: process.cwd(),
+      signal: controller.signal,
+    })) {
+      renderAgentEvent(ev);
     }
   } catch (err) {
     const e = err as Error;

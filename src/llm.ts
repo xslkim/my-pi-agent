@@ -18,6 +18,26 @@ function requiredEnv(name: string): string {
   return v;
 }
 
+// 内部 Message 的 tool_calls 是 {id,name,arguments}；线上（OpenAI/llama.cpp）要求
+// {id, type:"function", function:{name,arguments}}——少一层包装服务端直接 500。
+// 转换只发生在发请求这一处，内部结构与会话持久化保持简单形状。
+function toWire(messages: Message[]): unknown[] {
+  return messages.map((m) => ({
+    role: m.role,
+    content: m.content,
+    ...(m.tool_calls
+      ? {
+          tool_calls: m.tool_calls.map((c) => ({
+            id: c.id,
+            type: "function",
+            function: { name: c.name, arguments: c.arguments },
+          })),
+        }
+      : {}),
+    ...(m.tool_call_id ? { tool_call_id: m.tool_call_id } : {}),
+  }));
+}
+
 export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent> {
   const baseUrl = requiredEnv("LLM_BASE_URL");
   const apiKey = requiredEnv("LLM_API_KEY");
@@ -27,7 +47,7 @@ export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent
     headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
     body: JSON.stringify({
       model,
-      messages: opts.messages,
+      messages: toWire(opts.messages),
       stream: true,
       stream_options: { include_usage: true },
       ...(opts.tools?.length ? { tools: opts.tools } : {}),

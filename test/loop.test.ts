@@ -73,9 +73,12 @@ test("single tool, single round: model -> tool -> model, message order intact", 
     );
     assert.equal(messages[1].tool_calls?.[0].id, "c1");
     assert.equal(messages[2].tool_call_id, "c1");
-    // 第二次请求原样携带 assistant + tool 消息
-    const req2 = fake.requests[1] as { messages: Message[] };
+    // 第二次请求原样携带 assistant + tool 消息，且 tool_calls 是线上格式（回归：
+    // 直接发内部形状 {id,name,arguments} 会被 llama.cpp 以 500 拒绝）
+    const req2 = fake.requests[1] as { messages: { role: string; tool_calls?: { type: string; function: { name: string } }[]; tool_call_id?: string }[] };
     assert.equal(req2.messages[1].role, "assistant");
+    assert.equal(req2.messages[1].tool_calls?.[0].type, "function");
+    assert.equal(req2.messages[1].tool_calls?.[0].function.name, "calculator");
     assert.equal(req2.messages[2].role, "tool");
     assert.equal(req2.messages[2].tool_call_id, "c1");
   } finally {

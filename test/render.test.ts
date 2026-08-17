@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { renderEvent } from "../src/render.ts";
+import { renderEvent, renderAgentEvent } from "../src/render.ts";
 import { startFakeLLM } from "./fake-llm.ts";
 import { streamChat } from "../src/llm.ts";
 
@@ -66,4 +66,27 @@ test("renderEvent consumes a full fake stream end to end", async () => {
   } finally {
     await fake.close();
   }
+});
+
+test("tool_call / tool_result / error render visibly", () => {
+  const c = collector();
+  renderAgentEvent({ type: "tool_call", name: "calculator", args: { op: "*", a: 21, b: 2 } }, c.out);
+  renderAgentEvent({ type: "tool_result", id: "c1", name: "calculator", result: "42", ms: 3 }, c.out);
+  renderAgentEvent({ type: "error", message: "max steps exceeded (2)" }, c.out);
+  const out = c.get();
+  assert.ok(out.includes("→ calculator("));
+  assert.ok(out.includes('"op":"*"'));
+  assert.ok(out.includes("← 42 (3ms)"));
+  assert.ok(out.includes("max steps exceeded"));
+});
+
+test("tool result over 200 chars is truncated with ellipsis", () => {
+  const c = collector();
+  renderAgentEvent(
+    { type: "tool_result", id: "c1", name: "read", result: "x".repeat(500), ms: 1 },
+    c.out,
+  );
+  const out = c.get();
+  assert.ok(out.includes("…"));
+  assert.ok(out.length < 300);
 });

@@ -153,6 +153,7 @@ yield 一个 error 事件（超出 maxSteps）
 - **`maxSteps` 必须有**。模型会陷入「反复调同一个工具」的循环，没有上限就把 64K 上下文烧光，然后报 400。
 - **工具异常要捕获**，转成 `Error: ...` 文本回给模型，而不是崩掉整个进程。
 - **assistant 消息必须带 `tool_calls` 一起回传**，否则下一轮请求里 `role: "tool"` 消息会因为找不到对应的 `tool_call_id` 被服务端拒绝。
+- **回传的 `tool_calls` 要用线上格式**：`{id, type: "function", function: {name, arguments}}`。内部的 `ToolCall` 是扁平的 `{id, name, arguments}`，直接原样发会被 llama.cpp 以 500 拒绝（`Missing tool call type`）——真机实测踩到，转换放在 `llm.ts` 发请求处。
 - 工具**串行执行**即可。并行不进主线，留作练习（[lesson 02 练习 4](../lessons/02-tools.md#练习)）——它带来的竞态、事件顺序和错误聚合会淹没这一课的主题。
 
 ### 4. calculator 工具
