@@ -23,13 +23,15 @@
 ### 常用命令
 
 ```bash
-node --test                     # 全部单元测试（必须离线可跑、必须全绿）
+npm test                        # 全部单元测试（必须离线可跑、必须全绿）
 node --test test/llm.test.ts    # 单个测试文件
 npx tsc --noEmit                # 类型检查
 
 node acceptance/verify-lock.ts             # L5：考卷未被篡改
 node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在默认测试集里）
 ```
+
+注意「全量测试」一律用 `npm test`（即 `node --test "test/*.test.ts"`），**不要**用裸 `node --test`：按下面的发现规则，它还会把 `pi/` 子模块里的 `*.test.ts` 全部执行——那是参考实现的测试，在我们的环境里必然红，会把默认测试集永久污染。
 
 **`node --test` 的发现规则**（v25.2.1 实测）：`test/` 下递归的每个 `.ts` 都会被执行——哪怕它不叫 `*.test.ts`、哪怕里面没有一个 `test()`；此外仓库任意位置的 `*.test.ts` 也会被执行。所以 `test/` 里的辅助文件必须无顶层副作用，而 L5 的验收脚本放在 `acceptance/`，否则它会在应用存在之前就把默认测试集永久染红。
 
@@ -47,7 +49,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 
 | # | 任务 | 课 | 预算(src) | 前置 | 状态 |
 |---|---|---|---|---|---|
-| [T00](T00-scaffold.md) | 仓库骨架与零依赖验证 | — | 0 | — | todo |
+| [T00](T00-scaffold.md) | 仓库骨架与零依赖验证 | — | 0 | — | done |
 | [T01](T01-types.md) | 核心类型定义 | L1 | 60 | T00 | todo |
 | [T02](T02-fake-llm.md) | 假模型服务器 | L1 | 0 | T01 | todo |
 | [T03](T03-sse-client.md) | SSE 解析与 streamChat | L1 | 120 | T02 | todo |
