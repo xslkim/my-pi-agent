@@ -1,4 +1,11 @@
 import type { Message, StreamEvent, Usage } from "./types.ts";
+import { withRetry } from "./retry.ts";
+
+/** 携带 HTTP 状态与 Retry-After 的错误，withRetry 据此判断是否可重试。 */
+export class LlmError extends Error {
+  status?: number;
+  retryAfterMs?: number;
+}
 
 export interface ToolSchema {
   type: "function";
@@ -42,19 +49,33 @@ export async function* streamChat(opts: ChatOptions): AsyncGenerator<StreamEvent
   const baseUrl = requiredEnv("LLM_BASE_URL");
   const apiKey = requiredEnv("LLM_API_KEY");
   const model = requiredEnv("LLM_MODEL");
-  const res = await fetch(`${baseUrl}/chat/completions`, {
-    method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({
-      model,
-      messages: toWire(opts.messages),
-      stream: true,
-      stream_options: { include_usage: true },
-      ...(opts.tools?.length ? { tools: opts.tools } : {}),
-    }),
-    signal: opts.signal,
-  });
-  if (!res.ok) throw new Error(`LLM ${res.status}: ${await res.text()}`);
+  // 只重试「发起到拿到响应头」这一段。流已经吐出一半再重放会产生重复内容，
+  // 所以 res 到手之后发生的任何失败都不在重试范围内。
+  const res = await withRetry(
+    async () => {
+      const r = await fetch(`${baseUrl}/chat/completions`, {
+        method: "POST",
+        headers: { "content-type": "application/json", authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({
+          model,
+          messages: toWire(opts.messages),
+          stream: true,
+          stream_options: { include_usage: true },
+          ...(opts.tools?.length ? { tools: opts.tools } : {}),
+        }),
+        signal: opts.signal,
+      });
+      if (!r.ok) {
+        const err = new LlmError(`LLM ${r.status}: ${await r.text()}`);
+        err.status = r.status;
+        const ra = Number(r.headers.get("retry-after"));
+        if (Number.isFinite(ra) && ra > 0) err.retryAfterMs = ra * 1000;
+        throw err;
+      }
+      return r;
+    },
+    { signal: opts.signal },
+  );
   yield* parseSSE(res.body!);
 }
 
