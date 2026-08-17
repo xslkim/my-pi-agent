@@ -53,7 +53,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T01](T01-types.md) | 核心类型定义 | L1 | 60 | T00 | done |
 | [T02](T02-fake-llm.md) | 假模型服务器 | L1 | 0 | T01 | done |
 | [T03](T03-sse-client.md) | SSE 解析与 streamChat | L1 | 120 | T02 | done |
-| [T04](T04-cli-oneshot.md) | 渲染与单发 CLI | L1 | 100 | T03 | todo |
+| [T04](T04-cli-oneshot.md) | 渲染与单发 CLI | L1 | 100 | T03 | done |
 | [T05](T05-tool-registry.md) | Tool 接口与参数校验 | L2 | 70 | T04 | todo |
 | [T06](T06-calculator.md) | calculator 工具 | L2 | 40 | T05 | todo |
 | [T07](T07-toolcall-stream.md) | tool_call 增量解析 | L2 | 15 | T06 | todo |
