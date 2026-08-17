@@ -8,7 +8,16 @@ import { validate } from "../src/tools/registry.ts";
 
 function tmp() {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "bash-"));
-  return { dir, cleanup: () => fs.rmSync(dir, { recursive: true, force: true }) };
+  // 刚被强杀的子进程，其 cwd/文件句柄释放可能要几秒——rmSync 带退避重试；
+  // 仍失败就留给系统临时目录清理，不让测试因此变红
+  const cleanup = () => {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+    } catch (e) {
+      process.stderr.write(`[cleanup] temp dir left behind: ${(e as Error).message}\n`);
+    }
+  };
+  return { dir, cleanup };
 }
 
 async function run(cwd: string, args: unknown, signal?: AbortSignal) {
@@ -105,6 +114,33 @@ test("abort signal kills the running command", async (t) => {
     setTimeout(() => ac.abort(), 300);
     const out = await p;
     assert.match(out, /aborted|timed out/);
+  } finally {
+    cleanup();
+  }
+});
+
+test("background daemon does not deadlock the tool, and gets reaped", async (t) => {
+  if (!isBash) t.skip("no bash on this machine");
+  const { dir, cleanup } = tmp();
+  try {
+    const started = Date.now();
+    // run1 的真实场景：后台起一个持有 stdout 管道的常驻进程，前台命令很快结束。
+    // 旧实现等 close（stdio 全关）会永久挂死；现在应在宽限期内正常返回。
+    const out = await run(dir, {
+      command: 'node -e "setInterval(()=>require(\'fs\').appendFileSync(\'alive.txt\',\'x\'),200)" & echo bg-started; sleep 0.3',
+      timeout_ms: 8_000,
+    });
+    const elapsed = Date.now() - started;
+    assert.match(out, /bg-started/);
+    assert.doesNotMatch(out, /timed out/, "must resolve on exit, not via the timeout");
+    assert.ok(elapsed < 5_000, `took ${elapsed}ms`);
+    // 常驻进程必须已被清理：文件不应继续增长
+    const file = path.join(dir, "alive.txt");
+    await new Promise((r) => setTimeout(r, 800));
+    const size1 = fs.existsSync(file) ? fs.statSync(file).size : 0;
+    await new Promise((r) => setTimeout(r, 600));
+    const size2 = fs.existsSync(file) ? fs.statSync(file).size : 0;
+    assert.equal(size2, size1, "background daemon must be killed when the command returns");
   } finally {
     cleanup();
   }
