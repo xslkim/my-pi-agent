@@ -22,7 +22,7 @@ const USAGE = `usage: node src/cli.ts [prompt] [options]
   --yolo                 skip dangerous-command confirmation
   -h, --help             show this help
 example:
-  LLM_BASE_URL=http://192.168.3.28:8080/v1 LLM_API_KEY=sk-local-qwen36 LLM_MODEL=qwen3.8-27b node src/cli.ts "21*2" -s demo`;
+  LLM_BASE_URL=http://your-llm-host:8080/v1 LLM_API_KEY=your-key LLM_MODEL=your-model node src/cli.ts "21*2" -s demo`;
 
 function num(v: string | undefined, fallback: number, name: string): number {
   if (v === undefined) return fallback;
