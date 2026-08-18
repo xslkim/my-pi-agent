@@ -31,3 +31,15 @@ npx tsc --noEmit                        # 类型检查
 `--no-thinking` 隐藏思考 · `--yolo` 跳过危险命令确认 · `-h/--help` 完整用法。
 
 三个环境变量必填，代码里不设默认值。上面的地址与 key 是本机自用环境，分享前请替换。
+
+## 五课标签（回到任意一课的代码状态）
+
+```bash
+git checkout l1-talk       # 第 1 课：手写 SSE 客户端（176 行）
+git checkout l2-tools      # 第 2 课：tool calling + agent loop（累计 422 行）
+git checkout l3-coding     # 第 3 课：read/write/edit/bash 四工具（累计 735 行）
+git checkout l4-usable     # 第 4 课：REPL/会话/上下文/重试（累计 1066 行）
+git checkout l5-delivery   # 第 5 课：agent 交付登录应用，冒烟 10/10（累计 1106 行）
+```
+
+最后一课的两次实战记录见 [docs/runs/](docs/runs/)——run1 的 bash 死锁事故与修复、run1→run2 对比。

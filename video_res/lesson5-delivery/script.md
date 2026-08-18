@@ -290,29 +290,11 @@ h1{font-size:54px;margin-bottom:46px}
 >>> run2 与验收 #B10
 @enter: fade-up
 @exit: fade
-@visual: html
+@visual: video(./assets/run2-timelapse.mp4)
 
 --- visual ---
-<!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border-box}
-html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
-.wrap{padding:80px 100px 0}
-h1{font-size:54px;margin-bottom:44px}
-pre{font-family:"JetBrains Mono",monospace;font-size:30px;line-height:1.95;background:#161b22;border:1px solid #30363d;border-radius:18px;padding:44px 58px;white-space:pre;margin-bottom:38px}
-.p{color:#ff7b72}.c{color:#8b949e}.g{color:#3fb950}.ok{color:#3fb950;font-weight:700}
-</style></head><body><div class="wrap">
-<h1>run2 · 同一命令，从空目录重跑</h1>
-<pre><span class="p">$</span> node src/cli.ts --cwd demo/login-app -s l5-run2 --max-steps 30 "$(cat acceptance/task-prompt.md)"
-<span class="c">（……这次没有卡死，自测顺利完成）</span>
-
-<span class="p">$</span> node acceptance/verify-lock.ts
-<span class="ok">OK</span>   acceptance/login-app.smoke.ts     <span class="c"># 考卷没被动过</span>
-<span class="ok">OK</span>   acceptance/task-prompt.md
-
-<span class="p">$</span> node --test acceptance/login-app.smoke.ts
-<span class="g">✔ login-app locked acceptance (10 assertions)</span>
-<span class="g">pass 1  fail 0</span></pre>
-</div></body></html>
+（此描述仅作文档用途，实际使用 ./assets/run2-timelapse.mp4）
+由 docs/runs/l5-run2.jsonl 会话记录回放的快进时间轴（真实工具序列，时间轴按比例重建）：7 步完成交付，无死锁。
 
 --- narration ---
 修完之后，run2

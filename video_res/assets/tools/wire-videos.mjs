@@ -14,6 +14,7 @@ const MAP = [
   ["lesson3-coding", "B12", "hellojs-demo.mp4", "真实录屏：agent 在 demo/tmp 创建 hello.js 并用 node 运行验证。"],
   ["lesson4-usable", "B11", "session-resume.mp4", "真实录屏：两次单发——先存「代号紫葡萄」，再 -s vdemo -c 续聊答出代号。"],
   ["lesson5-delivery", "B06", "run1-timelapse.mp4", "由 docs/runs/l5-run1.jsonl 会话记录回放的快进时间轴（真实工具序列，时间轴按比例重建）。"],
+  ["lesson5-delivery", "B10", "run2-timelapse.mp4", "由 docs/runs/l5-run2.jsonl 会话记录回放的快进时间轴（真实工具序列，时间轴按比例重建）：7 步完成交付，无死锁。"],
 ];
 
 for (const [lesson, blockId, mp4, doc] of MAP) {

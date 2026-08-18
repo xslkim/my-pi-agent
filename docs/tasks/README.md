@@ -73,7 +73,7 @@ node --test acceptance/login-app.smoke.ts  # L5：验收（显式运行，不在
 | [T21](T21-bare-run.md) | 裸跑 run1 与失败记录 | L5 | 0 | T20 | done |
 | [T22](T22-ls-grep.md) | ls / grep 工具 | L5 | 110 | T21 | skip（run1 无证据，依 T21 纪律不做） |
 | [T23](T23-hardening.md) | 按失败记录加固 | L5 | 90 | T22 | done |
-| [T24](T24-final-run.md) | 重跑 run2 + 验收 + 复盘 | L5 | 0 | T23 | todo |
+| [T24](T24-final-run.md) | 重跑 run2 + 验收 + 复盘 | L5 | 0 | T23 | done |
 
 任务预算加总：L1 280 · L2 250 · L3 350 · L4 300 · L5 200 = **1380**。
 
