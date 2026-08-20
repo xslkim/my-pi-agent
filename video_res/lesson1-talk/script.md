@@ -163,8 +163,7 @@ split 拿到的是半截 JSON。</div>
 
 --- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
-*{margin:0;box-sizing:border_box}
-*{box-sizing:border-box}
+*{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
 .wrap{padding:80px 100px 0}
 h1{font-size:52px;margin-bottom:46px}
@@ -321,7 +320,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 每课末尾，对照 pi
 它的兼容层一千五百七十七行
 光思考字段就要认三种名字，还得防重复
-我们只服务一个端点，一百一十五行
+我们只服务一个端点，七十八行
 多出来的行数不是废话
 是四十家厂商的 **兼容性税**
 

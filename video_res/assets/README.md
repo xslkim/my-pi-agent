@@ -1,6 +1,6 @@
 # assets · 录屏素材与生成工具
 
-8 段终端实录 + 2 段源码滚动，全部 1920×1080 / 30fps / H.264 / yuv420p，已接入对应课程的
+5 段终端实录 + 2 段会话回放 + 2 段源码滚动，全部 1920×1080 / 30fps / H.264 / yuv420p，已接入对应课程的
 `script.md`（`@visual: video(./assets/<file>.mp4)`，该模式**不调任何 AI 服务**）。
 
 ## 已生成的素材
@@ -15,6 +15,7 @@
 | `lesson3-coding/assets/hellojs-demo.mp4` | L3-B12 | 17.8s | 真机创建 hello.js 并运行验证 |
 | `lesson4-usable/assets/session-resume.mp4` | L4-B11 | 15.4s | 真机 `-s` 存会话 + `-c` 续聊答出「紫葡萄」 |
 | `lesson5-delivery/assets/run1-timelapse.mp4` | L5-B06 | 23.8s | 由 `docs/runs/l5-run1.jsonl` 回放的工具序列快进（真实序列，时间轴按比例重建） |
+| `lesson5-delivery/assets/run2-timelapse.mp4` | L5-B10 | 17.1s | 由 `docs/runs/l5-run2.jsonl` 回放的工具序列快进（T24 真跑，无死锁） |
 
 ## 生成方式（全部可重复）
 
@@ -38,6 +39,4 @@ node wire-videos.mjs           # 把 script.md 的对应块切换到 video() 模
 
 - **L4 的 Ctrl+C 中止画面**未录制（Windows 管道模式下无法向子进程投递真实的 SIGINT 控制事件），
   该知识点由 L4-B03 的三层贯穿动画承担。
-- **run2 快进**待 T24 真跑之后可用 `render.mjs --jsonl docs/runs/l5-run2.jsonl` 同法生成，
-  接到 L5-B10。
 - 重录真机片段前先确认模型服务在线：`curl -s $LLM_BASE_URL/models -H "Authorization: Bearer sk-local-qwen36"`。

@@ -390,7 +390,7 @@ system prompt 只有五条，短、具体、可执行
 并跑一遍验证
 它先 write，再 bash 运行，最后汇报改动
 watching it work 的这一刻
-九百行代码，一个能改代码的 agent
+七百多行代码，一个能改代码的 agent
 
 
 >>> pi 对照 #B13

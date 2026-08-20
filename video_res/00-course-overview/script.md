@@ -8,14 +8,14 @@
 [0s] 主标题 "从零手写一个 Coding Agent" 淡入并上移 32px，白色 #e6edf3，粗体，字号 104px，居中，距顶部约 380px。
 [1s] 主标题下方 48px 处副标题 "五课 · 全部自己实现 · 零运行时依赖" 淡入，颜色 #8b949e，字号 40px。
 [1.8s] 副标题下方 40px 处出现一条 4px 粗的 accent 色 #58a6ff 横线，宽度 560px，从左向右扫入。
-[2.4s] 横线下方 56px 处两行标签淡入："~1400 行代码 · 每一行都自己写"、"参照 pi，但不 import 它"，字号 30px，颜色 #8b949e。
+[2.4s] 横线下方 56px 处两行标签淡入："~1100 行代码 · 每一行都自己写"、"参照 pi，但不 import 它"，字号 30px，颜色 #8b949e。
 背景四角可加极淡的 #161b22 网格纹理，所有元素避让底部 120px 字幕区。
 
 --- narration ---
 大家好
 这是一门 **从零手写** Coding Agent 的课程
 五节课，五个能跑的产物
-一共 **一千四百行** 代码
+一共 **一千一百行** 代码
 每一行都要自己写
 
 
@@ -80,15 +80,15 @@ h1{font-size:60px;text-align:center;margin-bottom:80px}
 <div class="row">
 <div class="card"><div class="file">pi · openai-completions.ts</div><div class="num">1577</div><div class="who">行 · 服务 40 家模型厂商</div></div>
 <div class="vs">VS</div>
-<div class="card"><div class="file">我们 · llm.ts</div><div class="num" style="color:#58a6ff">120</div><div class="who">行 · 只服务一个端点</div></div>
+<div class="card"><div class="file">我们 · llm.ts</div><div class="num" style="color:#58a6ff">149</div><div class="who">行 · 只服务一个端点</div></div>
 </div>
-<div class="note">差的那 1457 行，就是这门课要讲清的 <b>兼容性税</b></div>
+<div class="note">差的那 1428 行，就是这门课要讲清的 <b>兼容性税</b></div>
 </div></body></html>
 
 --- narration ---
 我们参照工业级实现 **pi**，但不 import 它任何包
 同样是模型兼容层
-pi 一千五百七十七行，我们一百二十行
+pi 一千五百七十七行，我们一百四十九行
 多出来的部分不是废话
 是服务四十家厂商的 **兼容性税**
 不懂这税交在哪，agent 就是玄学
@@ -120,7 +120,7 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 <div>[tokens: in=58 out=330]</div>
 <div>&nbsp;</div>
 <div><span class="p">$</span> node --test</div>
-<div><span class="g">✔ pass 107</span>&nbsp;&nbsp;<span class="c"># 全部离线，拔掉网线也能跑</span></div>
+<div><span class="g">✔ pass 108</span>&nbsp;&nbsp;<span class="c"># 全部离线，拔掉网线也能跑</span></div>
 <div>&nbsp;</div>
 <div><span class="p">$</span> cat package.json <span class="c"># dependencies: {}</span></div>
 </div>
