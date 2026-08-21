@@ -1,0 +1,214 @@
+{
+  "communities": {
+    "0": [
+      "cli",
+      "cli_main",
+      "cli_num",
+      "context",
+      "context_estimatetokens",
+      "context_fitcontext",
+      "context_messagetokens",
+      "llm_chatoptions",
+      "prompt",
+      "prompt_systemprompt",
+      "repl",
+      "repl_startrepl",
+      "session",
+      "session_appendmessage",
+      "session_loadsession",
+      "session_sessionfile",
+      "types_message"
+    ],
+    "1": [
+      "loop",
+      "loop_agentevent",
+      "loop_runagent",
+      "render",
+      "render_preview",
+      "render_renderagentevent",
+      "render_renderevent",
+      "render_writable",
+      "tools_registry_toapitools",
+      "tools_registry_validate",
+      "types",
+      "types_role",
+      "types_streamevent",
+      "types_toolcall"
+    ],
+    "2": [
+      "llm",
+      "llm_aborterror",
+      "llm_llmerror",
+      "llm_parsesse",
+      "llm_requiredenv",
+      "llm_streamchat",
+      "llm_toolschema",
+      "llm_towire",
+      "retry",
+      "retry_aborterror",
+      "retry_sleep",
+      "retry_withretry",
+      "types_usage"
+    ],
+    "3": [
+      "tools_calculator",
+      "tools_calculator_calculator",
+      "tools_registry",
+      "tools_registry_jsonschema",
+      "tools_registry_tool",
+      "tools_registry_tool_execute",
+      "tools_registry_toolcontext",
+      "tools_registry_validateresult"
+    ],
+    "4": [
+      "tools_guard",
+      "tools_guard_resolveinside",
+      "tools_guard_truncate",
+      "tools_guard_withtimeout",
+      "tools_read",
+      "tools_read_read",
+      "tools_write",
+      "tools_write_write"
+    ],
+    "5": [
+      "tools_bash",
+      "tools_bash_bash",
+      "tools_bash_clamptimeout",
+      "tools_bash_killgroup",
+      "tools_bash_killorphans",
+      "tools_bash_pickshell"
+    ],
+    "6": [
+      "tools_edit",
+      "tools_edit_edit",
+      "tools_edit_findlines"
+    ],
+    "7": [
+      "sum",
+      "sum_sum"
+    ]
+  },
+  "cohesion": {
+    "0": 0.3235294117647059,
+    "1": 0.24175824175824176,
+    "2": 0.2564102564102564,
+    "3": 0.2857142857142857,
+    "4": 0.35714285714285715,
+    "5": 0.3333333333333333,
+    "6": 0.6666666666666666,
+    "7": 1.0
+  },
+  "gods": [
+    {
+      "id": "repl_startrepl",
+      "label": "startRepl()",
+      "degree": 10
+    },
+    {
+      "id": "cli_main",
+      "label": "main()",
+      "degree": 9
+    },
+    {
+      "id": "tools_registry_tool",
+      "label": "Tool",
+      "degree": 9
+    },
+    {
+      "id": "loop_runagent",
+      "label": "runAgent()",
+      "degree": 8
+    },
+    {
+      "id": "types_message",
+      "label": "Message",
+      "degree": 8
+    },
+    {
+      "id": "llm_streamchat",
+      "label": "streamChat()",
+      "degree": 7
+    },
+    {
+      "id": "render_renderagentevent",
+      "label": "renderAgentEvent()",
+      "degree": 7
+    },
+    {
+      "id": "prompt_systemprompt",
+      "label": "systemPrompt()",
+      "degree": 5
+    },
+    {
+      "id": "session_sessionfile",
+      "label": "sessionFile()",
+      "degree": 5
+    },
+    {
+      "id": "session_appendmessage",
+      "label": "appendMessage()",
+      "degree": 5
+    }
+  ],
+  "surprises": [
+    {
+      "source": "main()",
+      "target": "runAgent()",
+      "source_files": [
+        "cli.ts",
+        "loop.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "main()",
+      "target": "renderAgentEvent()",
+      "source_files": [
+        "cli.ts",
+        "render.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "ChatOptions",
+      "target": "Message",
+      "source_files": [
+        "llm.ts",
+        "types.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories; peripheral node `ChatOptions` unexpectedly reaches hub `Message`"
+    },
+    {
+      "source": "runAgent()",
+      "target": "streamChat()",
+      "source_files": [
+        "loop.ts",
+        "llm.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    },
+    {
+      "source": "startRepl()",
+      "target": "runAgent()",
+      "source_files": [
+        "repl.ts",
+        "loop.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "connects across different repos/directories; bridges separate communities"
+    }
+  ],
+  "tokens": {
+    "input": 0,
+    "output": 0
+  }
+}
