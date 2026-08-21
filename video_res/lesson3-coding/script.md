@@ -4,13 +4,11 @@
 @visual: animation
 
 --- visual ---
-深色背景 #0d1117 填满画面，内容居中占画布约 82% 宽度。
-[0s] 左上角标签 "第 3 课 · L3"，accent 色 #58a6ff，字号 30px，等宽字体。
-[0.3s] 主标题 "让 agent 改代码" 淡入上移，白色 #e6edf3，粗体，字号 110px。
-[1s] 副标题 "为什么是四个工具，而不是四十个？" 淡入，#8b949e，40px，主标题下 44px。
-[1.8s] 副标题下 60px 处横排四个等宽胶囊标签依次弹入（间隔 0.25s）：read、write、edit、bash（JetBrains Mono，字号 40px，#a5d6ff，#161b22 底、#30363d 边框、圆角 999px，内边距 18px 40px，四枚总宽约 1100px 居中）。
-[3s] 底部一行结论淡入："真正难的不是怎么读文件，而是怎么不让它把事情搞砸" 字号 32px，#8b949e。
-避让底部 120px 字幕区。
+标题页（命中预制组件库 TitleCard）：
+kicker：「第 3 课 · L3」
+主标题：「让 agent 改代码」
+副标题：「为什么是四个工具，而不是四十个？」
+居中排版，主题默认配色。
 
 --- narration ---
 Claude Code、Cursor、pi，剥开都是同一件套
@@ -42,14 +40,14 @@ write: fs.writeFile(args.path, args.content)
 edit:  content.replace(args.old_string, args.new_string)
 bash:  exec(args.command)</pre>
 <div class="warn">跑一下，它真的能改文件了。学员会有点兴奋。<br>
-<b>接下来的四十分钟，专门用来打碎这份兴奋。</b></div>
+<b>接下来这一课，专门用来打碎这份兴奋。</b></div>
 </div></body></html>
 
 --- narration ---
 四个工具的裸实现，二十分钟写完
 跑一下，它真的能改文件了
 你会有点兴奋
-接下来的四十分钟
+接下来这一课
 专门用来 **打碎这份兴奋**
 
 
@@ -320,7 +318,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:30px;line-height:2.0;backgr
 <h1>同一台机器上有三个 bash</h1>
 <pre><span class="c">$ where bash</span>
 <span class="rb">C:\Windows\System32\bash.exe</span>                  <span class="r">← 这是 WSL！</span>
-C:\Users\xsl\...\WindowsApps\bash.exe      <span class="c">← 也是 WSL</span>
+C:\Users\you\...\WindowsApps\bash.exe      <span class="c">← 也是 WSL</span>
 <span class="gb">C:\Program Files\Git\bin\bash.exe</span>          <span class="g">← Git Bash，要这个</span></pre>
 <div class="foot">在 WSL 眼里，<b>G 盘是 /mnt/g</b>——agent 会在一个和文件工具<b>完全不同的文件系统</b>里操作，症状极难排查。<br>所以 shell 必须<b>显式探测</b>：优先 Git Bash，启动时打印实际使用的路径自证。</div>
 </div></body></html>
@@ -389,7 +387,7 @@ system prompt 只有五条，短、具体、可执行
 让它创建一个打印 hello world 的文件
 并跑一遍验证
 它先 write，再 bash 运行，最后汇报改动
-watching it work 的这一刻
+亲眼看它干活的这一刻
 七百多行代码，一个能改代码的 agent
 
 
@@ -418,7 +416,7 @@ h1{font-size:54px;margin-bottom:48px}
 <div class="m"><div class="f">pi · edit.ts + edit-diff.ts</div><div class="n">627</div><div class="d">多重编辑 · CRLF 保持 · BOM · unified diff</div></div>
 <div class="m"><div class="f">我们 · edit.ts</div><div class="n our">60</div><div class="d">唯一匹配 + 行号报错 + replace_all</div></div>
 <div class="m"><div class="f">pi · env/nodejs.ts</div><div class="n">695</div><div class="d">完整 shell 候选链 · 进程树 · 跨平台</div></div>
-<div class="m"><div class="f">我们 · bash.ts</div><div class="n our">89</div><div class="d">超时 · 进程组 · 截断</div></div>
+<div class="m"><div class="f">我们 · bash.ts</div><div class="n our">129</div><div class="d">超时 · 进程组 · 截断</div></div>
 </div>
 <div class="foot">四个坑已经足够理解这类工具的<b>设计原则</b>：<br>约束在代码里，不在愿望里。</div>
 </div></body></html>

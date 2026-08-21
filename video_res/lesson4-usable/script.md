@@ -4,13 +4,11 @@
 @visual: animation
 
 --- visual ---
-深色背景 #0d1117 填满画面，内容居中占画布约 82% 宽度。
-[0s] 左上角标签 "第 4 课 · L4"，accent 色 #58a6ff，字号 30px，等宽字体。
-[0.3s] 主标题 "让 agent 好用" 淡入上移，白色 #e6edf3，粗体，字号 118px。
-[1s] 副标题 "为什么 demo 里漂亮，一到真任务就崩？" 淡入，#8b949e，42px。
-[1.8s] 副标题下 56px 出现四张小卡横排依次弹入（间隔 0.25s，各约 380px 宽 150px 高，#161b22 底、#30363d 边框、圆角 14px）：「聊得久 · 上下文会满」「跑得长 · 你想中断」「会出错 · 网络会抖」「要续上 · 状态要留下」，卡内两行字号 28px。
-[3.4s] 底部结论行淡入："这四件事没有一件和智能有关，但少一件，第五课就会死在半路"，字号 30px，#8b949e。
-避让底部 120px 字幕区。
+标题页（命中预制组件库 TitleCard）：
+kicker：「第 4 课 · L4」
+主标题：「让 agent 好用」
+副标题：「为什么 demo 里漂亮，一到真任务就崩？」
+居中排版，主题默认配色。
 
 --- narration ---
 第四课要回答一个问题
@@ -66,17 +64,9 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 @visual: animation
 
 --- visual ---
-深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
-顶部标题「中止：AbortSignal 必须贯穿三层」字号 52px。
-旁白第 1 行期间：左侧出现一个竖直的信号源节点「SIGINT（Ctrl+C）」（圆角卡 320x120px，红色 #f85149 边框，字号 32px），从它引出三条水平线（初始灰色 #30363d 虚线）分别连向右侧三张卡片（各 480x170px，#161b22 底，#30363d 边框，圆角 14px）：
-  ① 「fetch 的 signal」小字「不传：SSE 继续流，字还在蹦」
-  ② 「工具 ctx.signal」小字「不传：bash 子进程继续跑」
-  ③ 「loop 检查 aborted」小字「不查：下一步照常开始」
-旁白第 2 行期间：第一条线变实线 accent #58a6ff 并流光到卡片①，卡片①边框变绿 #3fb950。
-旁白第 3 行期间：第二条线点亮，卡片②变绿。
-旁白第 4 行期间：第三条线点亮，卡片③变绿。
-旁白第 5 行期间：底部浮现结论条（宽 1420px、#161b22 底、左 8px accent 边）：「缺一层就会漏：按下去了，但它还在打字」字号 31px。
-避让底部 120px 字幕区。
+流程图（命中预制组件库 FlowDiagram）：标题「中止：AbortSignal 必须贯穿三层」，纵向（column）4 节点链，跟随旁白推进（props.lineTimings 驱动）：
+①「Ctrl+C · SIGINT」（详情：信号源）→ ②「fetch 的 signal」（详情：不传：SSE 继续流，字还在蹦）→ ③「工具 ctx.signal」（详情：不传：bash 子进程继续跑）→ ④「loop 检查 aborted」（详情：不查：下一步照常开始）
+使用默认链式边即可。
 
 --- narration ---
 这一课的难点是 **中止**
@@ -189,15 +179,15 @@ h1{font-size:54px;margin-bottom:56px}
 <h1>/history · 上下文都被谁吃掉了</h1>
 <div class="bar">
 <div class="lab"><span>工具结果（一次 read 一个大文件）</span><span>~5,400 tokens</span></div>
-<div class="track"><div class="fill" style="width:68%;background:#58a6ff"></div></div>
+<div class="track"><div class="fill" style="width:62%;background:#58a6ff"></div></div>
 </div>
 <div class="bar">
 <div class="lab"><span>历史轮次（user / assistant）</span><span>~3,100 tokens</span></div>
-<div class="track"><div class="fill" style="width:39%;background:#a5d6ff"></div></div>
+<div class="track"><div class="fill" style="width:36%;background:#a5d6ff"></div></div>
 </div>
 <div class="bar">
 <div class="lab"><span>system prompt</span><span>~180 tokens</span></div>
-<div class="track"><div class="fill" style="width:5%;background:#8b949e"></div></div>
+<div class="track"><div class="fill" style="width:2%;background:#8b949e"></div></div>
 </div>
 <div class="err">budget 24,000 → 超限即 400，整个会话作废</div>
 <div class="foot">会发现 <b>工具结果是大头</b>——一次 read 就是几千 token，几次就见底。<br>上下文是这门课最稀缺的资源。</div>
@@ -238,7 +228,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.9;backgr
 <div class="m"><div class="big">3.7</div><div class="lab">代码 字符/token<br>（249 字符 TS 实测 68 token）</div></div>
 <div class="m"><div class="big">1 次</div><div class="lab">请求就够<br>max_tokens=1，读 usage.prompt_tokens</div></div>
 </div>
-<pre><span class="k">return</span> Math.ceil(cjk * 0.7 + rest / 3.5);  <span class="c">// 实测值 + 20% 余量</span></pre>
+<pre><span class="k">return</span> Math.ceil(cjk * 0.7 + rest / 3.5);  <span class="c">// 实测值再加安全余量</span></pre>
 <div class="wrong">
 <div class="w">✗ chars/3 一刀切：中文低估约 1.8 倍——裁剪以为还有余量，实际已贴着上限，照样 400</div>
 <div class="w">✗ 中文一律 1 token/字：高估 1.7 倍——用量才六成就开始裁，长任务经不起这么糟蹋</div>

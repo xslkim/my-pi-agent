@@ -1,5 +1,5 @@
 --- meta ---
-title: 第 1 课 · 让模型说话（手写 SSE 客户端）
+title: 第 1 课 · 让模型说话（课程总览 + 手写 SSE 客户端）
 aspect: 16:9
 theme: dark-code
 fps: 30

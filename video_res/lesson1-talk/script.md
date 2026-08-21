@@ -1,26 +1,262 @@
->>> 第 1 课开场 #B01
+>>> 你每天都在用的黑盒 #B01
+@enter: fade-up
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
+.wrap{padding:90px 110px 0}
+.term{width:1700px;margin:0 auto;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
+.dot{width:20px;height:20px;border-radius:50%}
+.body{padding:40px 56px;font-family:"JetBrains Mono",monospace;font-size:30px;line-height:2.0}
+.p{color:#ff7b72}.dim{color:#8b949e}.g{color:#3fb950}.a{color:#58a6ff}
+.q{text-align:center;font-size:88px;font-weight:800;margin-top:70px}
+.q b{color:#58a6ff}
+</style></head><body><div class="wrap">
+<div class="term">
+<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
+<div class="body">
+<div><span class="p">›</span> 帮我给登录页加上「记住我」</div>
+<div class="dim">⠿ 读取 src/Login.tsx …</div>
+<div class="dim">⠿ 修改 src/Login.tsx <span class="g">(+12 -3)</span></div>
+<div class="dim">⠿ 运行 npm test <span class="g">✔ 14 passed</span></div>
+<div class="a">✔ 完成：勾选后下发 30 天有效期的 cookie</div>
+</div>
+</div>
+<div class="q">它是怎么<b>做到</b>的？</div>
+</div></body></html>
+
+--- narration ---
+你用过 Claude Code、Cursor 这类工具吧
+你说一句话，它读文件、改代码、跑测试
+像一个住在终端里的同事
+但用完之后，多数人心里只有一个词
+**黑盒**
+它到底是怎么做到的
+
+
+>>> 拆开黑盒 #B02
 @enter: fade-up
 @exit: fade
 @visual: animation
 
 --- visual ---
-深色背景 #0d1117 填满整个画面，内容居中占画布约 80% 宽度。
-[0s] 左上角小标签 "第 1 课 · L1" 淡入，accent 色 #58a6ff，字号 30px，等宽字体。
-[0.3s] 主标题 "让模型说话" 淡入上移，白色 #e6edf3，粗体，字号 120px，距顶约 360px。
-[1s] 副标题 "调用一次大模型，到底发生了什么？" 淡入，颜色 #8b949e，字号 42px，主标题下方 48px。
-[1.8s] 副标题下 36px 出现 4px 粗 accent 横线从左向右扫入，宽 480px。
-[2.2s] 横线下 48px 淡入一行小字 "把 SDK 扔掉，从字节层面重造一遍"，字号 30px，#8b949e。
-避让底部 120px 字幕区。
+要点列表（命中预制组件库 KeyPoints）：标题「agent 的五层能力」，5 条要点，跟随旁白逐条高亮（旁白恰好 5 行，与 5 条一一对应，用 props.lineTimings 驱动）：
+① 说话 —— 详情「一条到模型的流式通道」
+② 动手 —— 详情「模型发号施令，loop 执行工具」
+③ 改代码 —— 详情「read / write / edit / bash」
+④ 好用 —— 详情「会话 · 中止 · 上下文 · 重试」
+⑤ 交付 —— 详情「空目录里做出登录应用」
 
 --- narration ---
-第一课要回答一个问题
+拆开黑盒：第一层，**说话**，和模型建立流式通道
+第二层，**动手**，模型说调工具，我们来执行
+第三层，**改代码**，读写、编辑、跑命令
+第四层，**好用**，会话、中止、上下文管理
+第五层，**交付**，空目录做出真东西——这就是五节课
+
+
+>>> 五课路线图 #B03
+@enter: fade-up
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
+.wrap{padding:90px 80px 0}
+h1{font-size:64px;text-align:center;margin-bottom:70px}
+.cards{display:flex;gap:40px}
+.c{flex:1;background:#161b22;border:1px solid #30363d;border-top:6px solid #58a6ff;border-radius:18px;padding:44px 36px;height:560px}
+.n{font-size:30px;color:#58a6ff;font-weight:700;letter-spacing:2px}
+.t{font-size:42px;font-weight:700;margin:22px 0 18px}
+.d{font-size:29px;color:#8b949e;line-height:1.6}
+.tag{margin-top:26px;display:inline-block;font-family:"JetBrains Mono",monospace;font-size:24px;color:#a5d6ff;background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:8px 16px}
+</style></head><body><div class="wrap">
+<h1>五课五目标 · 每课一个 git tag</h1>
+<div class="cards">
+<div class="c"><div class="n">L1</div><div class="t">让模型说话</div><div class="d">手写 SSE 客户端<br>终端流式输出回答与思考</div><div class="tag">l1-talk</div></div>
+<div class="c"><div class="n">L2</div><div class="t">让模型动手</div><div class="d">tool calling 协议<br>agent loop 调工具再作答</div><div class="tag">l2-tools</div></div>
+<div class="c"><div class="n">L3</div><div class="t">改代码</div><div class="d">read / write / edit / bash<br>四个受约束的工具</div><div class="tag">l3-coding</div></div>
+<div class="c"><div class="n">L4</div><div class="t">让它好用</div><div class="d">REPL · 中止 · 会话<br>上下文预算 · 重试</div><div class="tag">l4-usable</div></div>
+<div class="c"><div class="n">L5</div><div class="t">让它交付</div><div class="d">在空目录里做出<br>登录应用并通过验收</div><div class="tag">l5-delivery</div></div>
+</div>
+</div></body></html>
+
+--- narration ---
+每一课都会留下一个能跑的产物
+和一个可以随时 checkout 的 git 标签
+学完第一课，终端里能逐字聊天
+学完第三课，它能真的改你的代码
+走完五课，你手里是一个 **一千一百行** 的 agent
+和一套谁也拿不走的理解
+只要写过 TypeScript，就能全程跟上
+
+
+>>> 为什么不 import pi #B04
+@enter: fade
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
+.wrap{padding:110px 80px 0}
+h1{font-size:60px;text-align:center;margin-bottom:80px}
+.row{display:flex;align-items:stretch;justify-content:center;gap:70px}
+.card{width:660px;background:#161b22;border:1px solid #30363d;border-radius:20px;padding:56px 48px;text-align:center}
+.file{font-family:"JetBrains Mono",monospace;font-size:28px;color:#a5d6ff;margin-bottom:34px}
+.num{font-size:150px;font-weight:800;line-height:1}
+.who{font-size:32px;color:#8b949e;margin-top:30px}
+.vs{display:flex;align-items:center;font-size:64px;color:#58a6ff;font-weight:700}
+.note{margin-top:70px;text-align:center;font-size:34px;color:#e6edf3}
+.note b{color:#58a6ff}
+</style></head><body><div class="wrap">
+<h1>同一个模块，两种写法</h1>
+<div class="row">
+<div class="card"><div class="file">pi · openai-completions.ts</div><div class="num">1577</div><div class="who">行 · 服务 40 家模型厂商</div></div>
+<div class="vs">VS</div>
+<div class="card"><div class="file">我们 · llm.ts</div><div class="num" style="color:#58a6ff">149</div><div class="who">行 · 只服务一个端点</div></div>
+</div>
+<div class="note">差的那 1428 行，就是这门课要讲清的 <b>兼容性税</b></div>
+</div></body></html>
+
+--- narration ---
+我们参照工业级实现 **pi**，但不 import 它任何包
+同样是模型兼容层
+pi 一千五百七十七行，我们一百四十九行
+多出来的部分不是废话
+是服务四十家厂商的 **兼容性税**
+不懂这税交在哪，agent 就是玄学
+
+
+>>> 零依赖运行 #B05
+@enter: slide-left
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
+.term{width:1560px;background:#161b22;border:1px solid #30363d;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.bar{height:62px;background:#0d1117;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1px solid #30363d}
+.dot{width:20px;height:20px;border-radius:50%}
+.body{padding:48px 56px;font-family:"JetBrains Mono",monospace;font-size:32px;line-height:1.9}
+.p{color:#ff7b72}.c{color:#8b949e}.g{color:#3fb950}.y{color:#d2a8ff}
+</style></head><body>
+<div class="term">
+<div class="bar"><span class="dot" style="background:#ff5f57"></span><span class="dot" style="background:#febc2e"></span><span class="dot" style="background:#28c840"></span></div>
+<div class="body">
+<div><span class="p">$</span> node -v</div>
+<div>v25.2.1&nbsp;&nbsp;<span class="c"># 原生跑 TypeScript，无构建步骤</span></div>
+<div>&nbsp;</div>
+<div><span class="p">$</span> node src/cli.ts <span class="y">"你好"</span></div>
+<div class="c">（终端逐字流式输出……）</div>
+<div>[tokens: in=58 out=330]</div>
+<div>&nbsp;</div>
+<div><span class="p">$</span> node --test</div>
+<div><span class="g">✔ pass 108</span>&nbsp;&nbsp;<span class="c"># 全部离线，拔掉网线也能跑</span></div>
+<div>&nbsp;</div>
+<div><span class="p">$</span> cat package.json <span class="c"># dependencies: {}</span></div>
+</div>
+</div>
+</body></html>
+
+--- narration ---
+整个项目 **零运行时依赖**
+Node 二十五 直接跑 TypeScript
+不需要构建步骤，不需要装包
+测试用内置的 node --test
+断网也能全绿
+
+
+>>> 三个固定环节 #B06
+@enter: fade-up
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
+.wrap{padding:100px 80px 0}
+h1{font-size:60px;text-align:center;margin-bottom:80px}
+.row{display:flex;gap:44px}
+.c{flex:1;background:#161b22;border:1px solid #30363d;border-radius:18px;padding:52px 44px;height:520px}
+.i{font-size:76px}
+.t{font-size:44px;font-weight:700;margin:28px 0 20px;color:#58a6ff}
+.d{font-size:30px;color:#8b949e;line-height:1.7}
+</style></head><body><div class="wrap">
+<h1>每节课的三个固定环节</h1>
+<div class="row">
+<div class="c"><div class="i">🔒</div><div class="t">验收先行</div><div class="d">考卷在 agent 进场前写好锁定<br>改考卷比改代码容易<br>必须有机制挡住这个诱惑</div></div>
+<div class="c"><div class="i">💥</div><div class="t">故障注入</div><div class="d">不等真实网络偶发 bug<br>主动把东西弄坏<br>先看见坏，再学会修</div></div>
+<div class="c"><div class="i">📐</div><div class="t">pi 对照</div><div class="d">每课末尾打开 pi 源码<br>诚实给出行数差<br>讲清工业级多做了什么</div></div>
+</div>
+</div></body></html>
+
+--- narration ---
+每节课都有三个固定环节
+**验收先行**，考卷先锁定，agent 不许改
+**故障注入**，主动把东西弄坏，先看见坏再修
+每课末尾 **对照 pi**
+看工业级实现到底多做了什么、为什么
+
+
+>>> 开始第一课 #B07
+@enter: fade-up
+@exit: fade
+@visual: html
+
+--- visual ---
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{margin:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;flex-direction:column;align-items:center;justify-content:center}
+h1{font-size:100px;font-weight:800}
+.sub{font-size:34px;color:#8b949e;margin:44px 0 64px}
+.cmd{font-family:"JetBrains Mono",monospace;font-size:36px;background:#161b22;border:1px solid #30363d;border-radius:14px;padding:26px 48px;color:#a5d6ff}
+.line{width:520px;height:4px;background:#58a6ff;margin-bottom:56px;border-radius:2px}
+</style></head><body>
+<div class="line"></div>
+<h1>现在，从第一课开始</h1>
+<div class="sub">每课一个标签，随时回到任意一课的状态</div>
+<div class="cmd">git checkout l1-talk</div>
+</body></html>
+
+--- narration ---
+每节课对应一个 git 标签
+随时可以 checkout 回到任意一课的代码状态
+现在，从第一课开始
+
+
+>>> 第 1 课开场 #B08
+@enter: fade-up
+@exit: fade
+@visual: animation
+
+--- visual ---
+标题页（命中预制组件库 TitleCard）：
+kicker：「第 1 课 · L1」
+主标题：「让模型说话」
+副标题：「调用一次大模型，到底发生了什么？」
+居中排版，主题默认配色。
+
+--- narration ---
+第一站，先回答一个问题
 调用一次大模型，**到底发生了什么**
+它是五层能力的最底层，一切都建在它的上面
 大多数人只见过 SDK 的一个函数调用
 这一课我们把 SDK 扔掉
 从字节层面把它重造一遍
 
 
->>> 先看协议 #B02
+>>> 先看协议 #B09
 @enter: fade
 @exit: fade
 @visual: video(./assets/curl-sse.mp4)
@@ -37,7 +273,7 @@
 最后以 data 中括号 DONE 结束
 
 
->>> 解剖一个事件 #B03
+>>> 解剖一个事件 #B10
 @enter: slide-left
 @exit: fade
 @visual: html
@@ -57,7 +293,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:33px;line-height:1.8;backgr
   "choices": [{
     "delta": {
       <span class="a">"content"</span>: "你",            <span class="c">// 正文增量</span>
-      <span class="a">"reasoning_content"</span>: "想想", <span class="c">// 思考增量</span>
+      <span class="a">"reasoning_content"</span>: "想想"  <span class="c">// 思考增量</span>
     },
     <span class="a">"finish_reason"</span>: null          <span class="c">// 为什么停下</span>
   }],
@@ -78,7 +314,7 @@ finish_reason 说明模型为什么停下
 所谓流式，就是把回答拆成碎片逐个发给你
 
 
->>> 天真的解析器 #B04
+>>> 天真的解析器 #B11
 @enter: fade
 @exit: fade
 @visual: html
@@ -106,6 +342,7 @@ split 拿到的是半截 JSON。</div>
 </div></body></html>
 
 --- narration ---
+知道了协议长什么样，就可以动手写解析器了
 最直觉的写法，是收到一块就切一块
 但 TCP 不保证事件边界
 一个事件可能被切成 **两半** 送达
@@ -113,7 +350,7 @@ split 拿到的是半截 JSON。</div>
 直接吐出乱码或者丢字
 
 
->>> 坑一 · 跨 chunk 缓冲 #B05
+>>> 坑一 · 跨 chunk 缓冲 #B12
 @enter: fade-up
 @exit: fade
 @visual: animation
@@ -135,7 +372,7 @@ split 拿到的是半截 JSON。</div>
 切一半的留在缓冲区，等下一块到齐
 
 
->>> 坑二 · 中文跨字节 #B06
+>>> 坑二 · 中文跨字节 #B13
 @enter: fade-up
 @exit: fade
 @visual: animation
@@ -156,7 +393,7 @@ split 拿到的是半截 JSON。</div>
 让解码器自己保留不完整的字节
 
 
->>> 坑三 · usage 延迟的 done #B07
+>>> 坑三 · usage 延迟的 done #B14
 @enter: fade
 @exit: fade
 @visual: html
@@ -210,7 +447,7 @@ finish_reason 和 usage **不在同一块** 里
 **流结束时** 再统一发 done 事件
 
 
->>> 假模型服务器 #B08
+>>> 假模型服务器 #B15
 @enter: slide-left
 @exit: fade
 @visual: html
@@ -244,7 +481,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.8;backgr
 </div></body></html>
 
 --- narration ---
-怎么离线测试这些分片情况？
+这三个坑，总不能靠真机偶发去碰运气
 我们写一个 **假模型服务器**
 它按脚本回放 SSE 字节流
 可以切在任意字节边界，包括汉字中间
@@ -252,7 +489,7 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.8;backgr
 能伪造协议，才说明你真的懂协议
 
 
->>> streamChat 设计 #B09
+>>> streamChat 设计 #B16
 @enter: fade
 @exit: fade
 @visual: html
@@ -283,13 +520,14 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 </div></body></html>
 
 --- narration ---
+协议和坑都清楚了，最后看客户端的形状
 客户端做成 **async generator**
 调用方用 for await 消费，天然支持提前 break
 这个设计让第四课的中止功能便宜了很多
 测试也简单，收集成数组就能断言
 
 
->>> 见真章 #B10
+>>> 见真章 #B17
 @enter: zoom-in
 @exit: fade
 @visual: video(./assets/talk-demo.mp4)
@@ -307,25 +545,26 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 下一课，给它装手
 
 
->>> pi 对照 #B11
+>>> pi 对照 #B18
 @enter: fade
 @exit: fade
 @visual: video(./assets/pi-scroll.mp4)
 
 --- visual ---
 （此描述仅作文档用途，实际使用 ./assets/pi-scroll.mp4）
-真实源码滚动：pi openai-completions.ts（1577 行）第 60–560 行快速滚过。
+真实源码滚动：pi openai-completions.ts（1577 行）第 60–560 行匀速滚过（19.1s）。
 
 --- narration ---
 每课末尾，对照 pi
 它的兼容层一千五百七十七行
 光思考字段就要认三种名字，还得防重复
-我们只服务一个端点，七十八行
+我们只服务一个端点，这个标签下 **七十八行**
+到结课也只涨到一百四十九行
 多出来的行数不是废话
 是四十家厂商的 **兼容性税**
 
 
->>> 第 1 课小结 #B12
+>>> 第 1 课小结 #B19
 @enter: fade-up
 @exit: fade
 @visual: html

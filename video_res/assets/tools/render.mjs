@@ -130,11 +130,12 @@ async function render(outMp4, { title, frames }) {
 // ---- 入口 ----
 const [, , cmd, ...rest] = process.argv;
 if (cmd === "--pi") {
-  // 用法: render.mjs --pi <源文件> <outMp4> <起始行> <结束行>
-  const [file, out, from = 1, to = 200] = rest;
+  // 用法: render.mjs --pi <源文件> <outMp4> <起始行> <结束行> [行步长=6]
+  // 帧时长下限 0.1s，滚动速度 = 行步长 / 0.1s；步长 3 ≈ 30 行/秒（慢速阅读节奏）
+  const [file, out, from = 1, to = 200, step = 6] = rest;
   const src = fs.readFileSync(file, "utf8").split("\n");
   const frames = [];
-  for (let top = +from; top <= +to; top += 6) {
+  for (let top = +from; top <= +to; top += +step) {
     const win = src.slice(top - 1, top - 1 + MAX_LINES)
       .map((l, i) => `\x1b[2m${String(top + i).padStart(5)}|\x1b[0m ${l.slice(0, WRAP - 8)}`);
     frames.push({ t: frames.length * 90, raw: win.join("\n") });
