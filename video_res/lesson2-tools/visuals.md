@@ -3,20 +3,11 @@
 @exit: fade
 @visual: animation
 
---- visual ---
 标题页（命中预制组件库 TitleCard）：
 kicker：「第 2 课 · L2」
 主标题：「让模型动手」
 副标题：「聊天机器人和 agent 的区别是什么？—— 一个 while 循环」
 居中排版，主题默认配色。
-
---- narration ---
-第二课要回答一个问题
-聊天机器人和 agent 的区别是什么
-答案短得让人失望
-**一个 while 循环**
-模型自己什么都不会执行
-真正让它成为 agent 的，是我们写的这段循环
 
 
 >>> 请求带上 tools #B02
@@ -24,7 +15,6 @@ kicker：「第 2 课 · L2」
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -56,21 +46,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:32px;line-height:1.8;backgr
 </div>
 </div></body></html>
 
---- narration ---
-第一步，在请求体里加一个 **tools** 字段
-每个工具就是名字、描述、一份手写 Schema
-模型看到的，只是这张说明书
-注意 description 里那句
-不要自己心算，请用计算器
-没有它，模型经常绕过工具直接口算
-
 
 >>> 响应变了 #B03
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -95,21 +76,12 @@ data: {"choices":[{"delta":{},"<span class="hl">finish_reason</span>":"<span cla
 它只是按格式说了一句：「请帮我调 calculator，参数是这些」——这就是全部魔法。</div>
 </div></body></html>
 
---- narration ---
-带上 tools 再问，响应就变了
-正文是空的，多出来 **tool_calls**
-finish_reason 变成了 tool_calls
-注意，模型没有执行任何计算
-它只是按格式说了一句
-**请帮我调这个工具，参数如下**
-
 
 >>> 坑一 · 参数是碎片 #B04
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「坑 1 · arguments 是一片一片吐出来的（真实抓包）」字号 52px。
 旁白第 2 行期间：中央出现等宽字号的五条碎片行（每条一张 1400px 宽、92px 高的 #161b22 圆角卡，字号 32px，#a5d6ff），自上而下依次淡入，内容：
@@ -123,21 +95,12 @@ finish_reason 变成了 tool_calls
 旁白第 5 行期间：完整卡下方浮现红色 #ff7b72 警示条「中途 parse 必失败：{"a":2 看起来像个合法的中间状态」字号 28px。
 避让底部 120px 字幕区。
 
---- narration ---
-第一个坑，工具参数是 **碎片**
-真实抓包里，数字 21 是分成 2 和 1 两片吐出来的
-只有第一片带 id 和名字，后面只有 index
-必须按 index 累加，流结束后再 parse
-中途 parse 一定失败
-而且失败的样子，**看起来像个合法的中间状态**
-
 
 >>> 坑二 · 类型不是校验 #B05
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -171,32 +134,15 @@ pre{font-family:"JetBrains Mono",monospace;font-size:29px;line-height:1.9;backgr
 <div class="fix">TypeScript 的类型只是注释，运行时什么都不检查。<br>校验失败<b>不抛异常</b>——把错误文本当工具结果回给模型，让它自己改。</div>
 </div></body></html>
 
---- narration ---
-第二个坑，类型不是校验
-TypeScript 的类型在运行时 **根本不存在**
-而模型一定会传错
-字符串当数字、缺字段、调不存在的工具
-所以要自己写一个六十行的校验器
-数字宽容转换，错误信息具体到字段名
-
 
 >>> 错误也是消息 · 自愈 #B06
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 流程图（命中预制组件库 FlowDiagram）：标题「校验失败 → 回传 → 自愈」，横向 3 节点，跟随旁白推进（props.lineTimings 驱动）：
 节点：①「模型」（详情：发出 tool_calls）→ ②「loop · 校验」（详情：失败不抛异常）→ ③「错误文本」（详情：field "op" is required）
 边：①→② 标注「tool_calls」；②→③ 标注「校验失败」；③→① 加一条返回边，标注「当消息回传，模型补全重试」。
-
---- narration ---
-关键设计：校验失败 **不抛异常**
-把错误文本当成工具结果，回给模型
-模型读到 field op is required
-会自己补上参数重试
-这是 agent 最重要的 **自愈机制**
-也是它看起来有智能的来源之一
 
 
 >>> agent loop #B07
@@ -204,7 +150,6 @@ TypeScript 的类型在运行时 **根本不存在**
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -232,20 +177,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:33px;line-height:1.85;backg
 </div>
 </div></body></html>
 
---- narration ---
-现在写心脏，**agent loop**
-调模型，收到 tool_calls 就执行
-结果作为 tool 消息塞回去，再调模型
-直到模型不再要工具，循环结束
-去掉包装，所谓 agent 就是这个 while
-
 
 >>> 消息顺序铁律 #B08
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -284,21 +221,12 @@ h1{font-size:54px;margin-bottom:44px}
 <div class="foot">这条约束在第 4 课<b>裁剪上下文</b>时会再咬人一次——裁一半同样产生孤儿。</div>
 </div></body></html>
 
---- narration ---
-loop 里有一条铁律
-带 tool_calls 的 assistant 消息
-必须紧跟它的全部 tool 结果
-少一条，下一次请求直接 **400**
-而且报错信息完全看不出根因
-记住这条，第四课它还会回来
-
 
 >>> maxSteps 防死循环 #B09
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「没有上限，循环会烧光上下文」字号 52px。
 旁白第 1 行期间：中央出现一个循环示意：两张卡片（「模型」和「工具」）之间双向箭头，箭头上标注 `tool_calls` 与 `tool result`，卡片间开始循环闪烁（accent #58a6ff ↔ #8b949e 交替）。
@@ -308,21 +236,12 @@ loop 里有一条铁律
 旁白第 5 行期间：底部两行小字对比（28px，#8b949e）：「本地免费模型：这一幕很便宜」「按 token 计费的云 API：这一幕很贵」，其中「很贵」用 #ff7b72 高亮。
 避让底部 120px 字幕区。
 
---- narration ---
-真实模型会陷入死循环，反复调同一个工具
-所以 **maxSteps 是必需品**，不是防御性洁癖
-没有上限，六万四的上下文会被烧光
-然后服务端返回 400，会话作废
-在本地免费模型上这一幕很便宜
-在按 token 计费的云上，这一幕 **很贵**
-
 
 >>> 真机踩坑 · 线格式 #B10
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -360,31 +279,14 @@ pre{font-family:"JetBrains Mono",monospace;font-size:28px;line-height:1.8;white-
 <div class="note">这个 bug <b>假模型测不出来</b>——它校验的是我们自己定义的形状。<br>真机第一跑工具就炸出来；转换放在 llm.ts 发请求处，内部结构保持简单。</div>
 </div></body></html>
 
---- narration ---
-分享一个真机才踩得出来的坑
-回传 tool_calls 必须用 **线上格式**
-带 type 冒号 function，再包一层 function
-直接发内部形状，llama.cpp 直接 **500**
-假模型测不出这个问题
-因为它验的是我们自己定义的形状
-
 
 >>> 见真章 #B11
 @enter: zoom-in
 @exit: fade
 @visual: video(./assets/calc-tools.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/calc-tools.mp4）
 真实录屏：模型串行两次调用 calculator（21*2 → 42+8），参数与结果实时可见。
-
---- narration ---
-见真章
-问它，用计算器算 21 乘 2 加 8
-它先调乘法拿到 42
-再把 42 喂给加法，得到 50
-注意第二次调用的参数来自第一次的结果
-到这里，它是一个 **agent** 了
 
 
 >>> pi 对照与小结 #B12
@@ -392,14 +294,5 @@ pre{font-family:"JetBrains Mono",monospace;font-size:28px;line-height:1.8;white-
 @exit: fade
 @visual: video(./assets/pi-loop.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/pi-loop.mp4）
 真实源码滚动：pi agent-loop.ts 796 行全文匀速滚过（22.3s）。
-
---- narration ---
-pi 的 loop 七百九十六行
-多出来的是并行工具、插话队列、生命周期钩子
-每一个都对应我们刻意跳过的边界
-但对于理解 agent 是什么
-九十行的一个循环，就够了
-下一课，让它改代码

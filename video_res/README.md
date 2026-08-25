@@ -1,6 +1,6 @@
 # video_res · 视频课程素材
 
-「从零手写一个 Coding Agent」五课视频（课程总览已并入第 1 课），按 [AutoVideo AUTHORING.md](D:/AutoVideo/docs/AUTHORING.md) 规范编写。
+「从零手写一个 Coding Agent」五课视频（课程总览已并入第 1 课），按 [AutoVideo AUTHORING.md](/home/xsl/AutoVideo/docs/AUTHORING.md) 规范编写。
 
 ## 目录
 
@@ -12,13 +12,29 @@
 | `lesson4-usable/` | 第 4 课 · 让 agent 好用（REPL · 中止 · 会话 · 上下文 · 重试） | `pi-agent-lesson4-usable` | 11 | ~5 min |
 | `lesson5-delivery/` | 第 5 课 · 让 agent 交付（登录应用实战） | `pi-agent-lesson5-delivery` | 12 | ~5 min |
 
-每个文件夹内：`meta.md`（元数据）+ `script.md`（`>>>` 分块脚本）。
+每个文件夹内：`meta.md`（元数据）+ `visuals.md`（视觉，`>>>` 分块）+ `narration.md`（旁白，块 ID 与 visuals.md 一一对应）+ `project.json`。
+
+## AutoVideo 项目软连接
+
+AutoVideo 工程内的项目目录不复制资源，逐文件软连接回本仓库（真实资源以本仓库为准）：
+
+```
+/home/xsl/AutoVideo/project/pi-agent-lesson1-talk/
+├── meta.md      -> /home/xsl/my-pi-agent/video_res/lesson1-talk/meta.md
+├── visuals.md   -> .../lesson1-talk/visuals.md
+├── narration.md -> .../lesson1-talk/narration.md
+├── project.json -> .../lesson1-talk/project.json
+├── assets/      -> .../lesson1-talk/assets
+└── build/       # 构建产物（实体目录，留在 AutoVideo 侧）
+```
+
+其余四课同理（`pi-agent-lesson2-tools` … `pi-agent-lesson5-delivery`）。
+在本仓库改动脚本即等于改动 AutoVideo 项目，无需同步。
 
 ## 构建前必读
 
-1. **voiceRef 假设**：各 `meta.md` 写的是 `voiceRef: ../../B00.wav`，按「文件夹被复制到
-   `D:\AutoVideo\project\<slug>\` 下」的惯例指向 `D:\AutoVideo\B00.wav`。若直接在本目录构建，
-   请把 `voiceRef` 改为绝对路径 `D:/AutoVideo/B00.wav`。
+1. **voiceRef 假设**：各 `meta.md` 写的是 `voiceRef: ../../B00.wav`，按「项目在
+   `/home/xsl/AutoVideo/project/<slug>/` 下」的惯例指向 `/home/xsl/AutoVideo/B00.wav`。
 2. **视觉模式分布**（遵循 AUTHORING.md §3.0 的优先级规则）：
    - `video(./assets/*.mp4)`（9 处）：**真实终端实录**与真实源码滚动——录制与生成方式见
      [`assets/README.md`](assets/README.md)，该模式不调 AI；
@@ -32,5 +48,5 @@
 
 ## 交给构建 Agent
 
-把任一课程文件夹（例如 `G:\my-pi-agent\video_res\lesson1-talk`）交给负责构建的 Agent，
-按 `D:\AutoVideo\docs\BUILD.md` 流程生成 MP4 即可。五个视频相互独立，可分别构建。
+把任一课程项目目录（例如 `/home/xsl/AutoVideo/project/pi-agent-lesson1-talk`）交给负责构建的 Agent，
+按 `/home/xsl/AutoVideo/docs/BUILD.md` 流程生成 MP4 即可。五个视频相互独立，可分别构建。

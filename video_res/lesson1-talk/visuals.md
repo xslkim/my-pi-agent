@@ -3,7 +3,6 @@
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -29,21 +28,12 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 <div class="q">它是怎么<b>做到</b>的？</div>
 </div></body></html>
 
---- narration ---
-你用过 Claude Code、Cursor 这类工具吧
-你说一句话，它读文件、改代码、跑测试
-像一个住在终端里的同事
-但用完之后，多数人心里只有一个词
-**黑盒**
-它到底是怎么做到的
-
 
 >>> 拆开黑盒 #B02
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 要点列表（命中预制组件库 KeyPoints）：标题「agent 的五层能力」，5 条要点，跟随旁白逐条高亮（旁白恰好 5 行，与 5 条一一对应，用 props.lineTimings 驱动）：
 ① 说话 —— 详情「一条到模型的流式通道」
 ② 动手 —— 详情「模型发号施令，loop 执行工具」
@@ -51,20 +41,12 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 ④ 好用 —— 详情「会话 · 中止 · 上下文 · 重试」
 ⑤ 交付 —— 详情「空目录里做出登录应用」
 
---- narration ---
-拆开黑盒：第一层，**说话**，和模型建立流式通道
-第二层，**动手**，模型说调工具，我们来执行
-第三层，**改代码**，读写、编辑、跑命令
-第四层，**好用**，会话、中止、上下文管理
-第五层，**交付**，空目录做出真东西——这就是五节课
-
 
 >>> 五课路线图 #B03
 @enter: fade-up
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -87,22 +69,12 @@ h1{font-size:64px;text-align:center;margin-bottom:70px}
 </div>
 </div></body></html>
 
---- narration ---
-每一课都会留下一个能跑的产物
-和一个可以随时 checkout 的 git 标签
-学完第一课，终端里能逐字聊天
-学完第三课，它能真的改你的代码
-走完五课，你手里是一个 **一千一百行** 的 agent
-和一套谁也拿不走的理解
-只要写过 TypeScript，就能全程跟上
-
 
 >>> 为什么不 import pi #B04
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -126,21 +98,12 @@ h1{font-size:60px;text-align:center;margin-bottom:80px}
 <div class="note">差的那 1428 行，就是这门课要讲清的 <b>兼容性税</b></div>
 </div></body></html>
 
---- narration ---
-我们参照工业级实现 **pi**，但不 import 它任何包
-同样是模型兼容层
-pi 一千五百七十七行，我们一百四十九行
-多出来的部分不是废话
-是服务四十家厂商的 **兼容性税**
-不懂这税交在哪，agent 就是玄学
-
 
 >>> 零依赖运行 #B05
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
@@ -168,20 +131,12 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 </div>
 </body></html>
 
---- narration ---
-整个项目 **零运行时依赖**
-Node 二十五 直接跑 TypeScript
-不需要构建步骤，不需要装包
-测试用内置的 node --test
-断网也能全绿
-
 
 >>> 三个固定环节 #B06
 @enter: fade-up
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -201,20 +156,12 @@ h1{font-size:60px;text-align:center;margin-bottom:80px}
 </div>
 </div></body></html>
 
---- narration ---
-每节课都有三个固定环节
-**验收先行**，考卷先锁定，agent 不许改
-**故障注入**，主动把东西弄坏，先看见坏再修
-每课末尾 **对照 pi**
-看工业级实现到底多做了什么、为什么
-
 
 >>> 开始第一课 #B07
 @enter: fade-up
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;flex-direction:column;align-items:center;justify-content:center}
@@ -229,31 +176,17 @@ h1{font-size:100px;font-weight:800}
 <div class="cmd">git checkout l1-talk</div>
 </body></html>
 
---- narration ---
-每节课对应一个 git 标签
-随时可以 checkout 回到任意一课的代码状态
-现在，从第一课开始
-
 
 >>> 第 1 课开场 #B08
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 标题页（命中预制组件库 TitleCard）：
 kicker：「第 1 课 · L1」
 主标题：「让模型说话」
 副标题：「调用一次大模型，到底发生了什么？」
 居中排版，主题默认配色。
-
---- narration ---
-第一站，先回答一个问题
-调用一次大模型，**到底发生了什么**
-它是五层能力的最底层，一切都建在它的上面
-大多数人只见过 SDK 的一个函数调用
-这一课我们把 SDK 扔掉
-从字节层面把它重造一遍
 
 
 >>> 先看协议 #B09
@@ -261,16 +194,8 @@ kicker：「第 1 课 · L1」
 @exit: fade
 @visual: video(./assets/curl-sse.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/curl-sse.mp4）
 真实录屏：curl -N 以 300B/s 限速拉取 SSE 字节流，data: 事件逐行到达，最后 [DONE]。
-
---- narration ---
-不写代码，先用 curl 看真实的字节流
-请求发出去，屏幕上滚过的就是 **SSE**
-每个事件以 data 冒号开头
-事件之间用 **两个换行** 分隔
-最后以 data 中括号 DONE 结束
 
 
 >>> 解剖一个事件 #B10
@@ -278,7 +203,6 @@ kicker：「第 1 课 · L1」
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -306,20 +230,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:33px;line-height:1.8;backgr
 </div>
 </div></body></html>
 
---- narration ---
-拆开一个事件看
-content 是正文 **增量**，不是完整回答
-reasoning_content 是思考过程
-finish_reason 说明模型为什么停下
-所谓流式，就是把回答拆成碎片逐个发给你
-
 
 >>> 天真的解析器 #B11
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -341,21 +257,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:32px;line-height:1.8;backgr
 split 拿到的是半截 JSON。</div>
 </div></body></html>
 
---- narration ---
-知道了协议长什么样，就可以动手写解析器了
-最直觉的写法，是收到一块就切一块
-但 TCP 不保证事件边界
-一个事件可能被切成 **两半** 送达
-天真解析器拿到半截 JSON
-直接吐出乱码或者丢字
-
 
 >>> 坑一 · 跨 chunk 缓冲 #B12
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 画面中上部有一个宽 1600px 高 130px 的「字节流轨道」（背景 #161b22、圆角 14px、边框 #30363d），内部是一段浅色 #a5d6ff 等宽文本 `data: {"choices":[{"delta":{"content":"你"}}]}` 加尾部两个换行符标记。
 旁白第 2 行期间：轨道上方落下三块碎片卡片（各约 500px 宽、110px 高、#0d1117 底、#30363d 边框、圆角 12px、等宽字号 30px），分别写着 `data: {"choi`、`ces":[{"delta":{"con`、`tent":"你"}}]}\n\n`，依次从上方淡入落到轨道里。
@@ -364,20 +271,12 @@ split 拿到的是半截 JSON。</div>
 旁白第 5 行期间：完整事件卡上移飞出，轨道尾部剩余半截文字微微闪烁，旁边小字标注「切一半的留在缓冲区，等下一块」字号 26px #8b949e。
 标题区：顶部距边 70px 有标题「坑 1 · 事件被 TCP 切两半」字号 54px #e6edf3。全部内容避让底部 120px 字幕区。
 
---- narration ---
-第一个坑，**跨 chunk 缓冲**
-一个事件到达时是三块碎片
-修法：每收到一块，先拼进缓冲区
-再循环找双换行，找到完整事件才处理
-切一半的留在缓冲区，等下一块到齐
-
 
 >>> 坑二 · 中文跨字节 #B13
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 旁白第 2 行期间：中央出现大字「你」（字号 200px，白色 #e6edf3），下方并列显示它的三个 UTF-8 字节方块：`e4` `bd` `a0`（各 150px 见方，#161b22 底、#30363d 边框、圆角 16px、等宽字号 44px、#a5d6ff），三块之间有细线连到「你」字。
 旁白第 3 行期间：一条 4px 红色 #f85149 竖分割线从 `bd` 和 `a0` 之间落下，把三块字节分成左二右一，右侧那块微微下沉变暗，上方浮现红色小字「半个字符」字号 30px。
@@ -385,20 +284,12 @@ split 拿到的是半截 JSON。</div>
 旁白第 5 行期间：底部出现结论条（宽 1200px、#161b22 底、左侧 6px accent 边）：「解码器自己保留不完整的字节」字号 32px。
 顶部标题「坑 2 · 多字节字符被切在中间」字号 54px。避让底部 120px 字幕区。
 
---- narration ---
-第二个坑藏得更深
-一个汉字是 **三个字节**，可能正好被切在中间
-不加处理的解码器会把半截字节变成乱码
-修法只有一行：decode 加上 **stream true**
-让解码器自己保留不完整的字节
-
 
 >>> 坑三 · usage 延迟的 done #B14
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -438,21 +329,12 @@ data: [DONE]
 <div class="foot">这个 bug 要到第 4 课打印 token 用量时才暴露——<b>协议要看真实字节，不要看想象</b>。</div>
 </div></body></html>
 
---- narration ---
-第三个坑，只有真机抓包才能看到
-finish_reason 和 usage **不在同一块** 里
-带 usage 的末块，choices 还是空数组
-看到 finish_reason 就发 done，usage 永远是空的
-正确做法：两个都先存着
-**流结束时** 再统一发 done 事件
-
 
 >>> 假模型服务器 #B15
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -480,21 +362,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.8;backgr
 </div>
 </div></body></html>
 
---- narration ---
-这三个坑，总不能靠真机偶发去碰运气
-我们写一个 **假模型服务器**
-它按脚本回放 SSE 字节流
-可以切在任意字节边界，包括汉字中间
-全部测试毫秒级，断网也能跑
-能伪造协议，才说明你真的懂协议
-
 
 >>> streamChat 设计 #B16
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -519,30 +392,14 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 </div>
 </div></body></html>
 
---- narration ---
-协议和坑都清楚了，最后看客户端的形状
-客户端做成 **async generator**
-调用方用 for await 消费，天然支持提前 break
-这个设计让第四课的中止功能便宜了很多
-测试也简单，收集成数组就能断言
-
 
 >>> 见真章 #B17
 @enter: zoom-in
 @exit: fade
 @visual: video(./assets/talk-demo.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/talk-demo.mp4）
 真实录屏：node src/cli.ts 真机流式输出——暗色思考、逐字正文、末尾 token 统计。
-
---- narration ---
-见真章
-一行命令，回答在终端里 **逐字蹦出来**
-思考过程用暗色显示，和正文分得清
-末尾一行 token 统计——延迟 done 的设计在这里兑现
-记住，它现在只会说话，不会做事
-下一课，给它装手
 
 
 >>> pi 对照 #B18
@@ -550,18 +407,8 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 @exit: fade
 @visual: video(./assets/pi-scroll.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/pi-scroll.mp4）
 真实源码滚动：pi openai-completions.ts（1577 行）第 60–560 行匀速滚过（19.1s）。
-
---- narration ---
-每课末尾，对照 pi
-它的兼容层一千五百七十七行
-光思考字段就要认三种名字，还得防重复
-我们只服务一个端点，这个标签下 **七十八行**
-到结课也只涨到一百四十九行
-多出来的行数不是废话
-是四十家厂商的 **兼容性税**
 
 
 >>> 第 1 课小结 #B19
@@ -569,7 +416,6 @@ pre{font-family:"JetBrains Mono",monospace;font-size:34px;line-height:1.85;backg
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -594,10 +440,3 @@ h1{font-size:58px;margin-bottom:50px}
 ② 假模型加「中途断连」脚本，让客户端优雅报错<br>
 ③ 思考：data: 后面没有空格，解析器还能工作吗？</div>
 </div></body></html>
-
---- narration ---
-第一课的三个坑，全部来自真实字节流
-缓冲区、stream 解码、延迟的 done
-假模型服务器会陪我们走到最后一课
-课后有三道练习
-下一课，让模型 **动手**

@@ -3,20 +3,11 @@
 @exit: fade
 @visual: animation
 
---- visual ---
 标题页（命中预制组件库 TitleCard）：
 kicker：「第 4 课 · L4」
 主标题：「让 agent 好用」
 副标题：「为什么 demo 里漂亮，一到真任务就崩？」
 居中排版，主题默认配色。
-
---- narration ---
-第四课要回答一个问题
-为什么 demo 里漂亮的 agent，一到真任务就崩
-因为真任务意味着四件事
-聊得久、跑得长、会出错、要续上
-这四件事 **没有一件和智能有关**
-但少任何一件，第五课就会死在半路
 
 
 >>> REPL 与斜杠命令 #B02
@@ -24,7 +15,6 @@ kicker：「第 4 课 · L4」
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3;display:flex;align-items:center;justify-content:center}
@@ -52,20 +42,12 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 <div class="tag">→ repl.ts</div>
 </body></html>
 
---- narration ---
-先把一次一问，变成坐下来一直聊
-斜杠命令本地处理，**绝不发给模型**
-查上下文用量、清空历史、另存会话
-但注意，我们刻意不做 **TUI**——终端图形界面
-学员要始终看得见发生了什么
-
 
 >>> Ctrl+C 三层贯穿 #B03
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 流程图（命中预制组件库 FlowDiagram）：标题「中止：AbortSignal 必须贯穿三层」，纵向（column）4 节点链，跟随旁白推进（props.lineTimings 驱动）：
 ①「Ctrl+C · SIGINT」（详情：信号源）→ ②「fetch 的 signal」（详情：不传：SSE 继续流，字还在蹦）→ ③「工具 ctx.signal」（详情：不传：bash 子进程继续跑）→ ④「loop 检查 aborted」（详情：不查：下一步照常开始）
 使用默认链式边即可。
@@ -73,24 +55,12 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 旁白第 8、9 行期间：流程图右上角浮现一个两行小字卡片（#161b22 底、1px #30363d 边、圆角 12px、padding 20px 26px）：「生成中 → 停本轮」「空闲 → 退出」，字号 26px 等宽，颜色 #8b949e（「→」用 accent #58a6ff）；不遮挡节点链。
 画面左下角常驻小字标注「→ repl.ts · loop.ts · llm.ts」，字号 22px，颜色 #8b949e，避让底部 120px 字幕区。
 
---- narration ---
-这一课的难点是 **中止**
-**AbortSignal** 就是 fetch 那个取消信号
-它必须贯穿三层，缺一层就会漏
-不传给 fetch，SSE 继续流，字还在蹦
-不传给工具，bash 子进程继续跑
-loop 不检查，下一步照常开始
-三层都接上，Ctrl+C 才真正停得下来
-Ctrl+C 有两种含义：干活时停本轮，空闲时才退出
-REPL 靠 generating 标志，区分这两种时刻
-
 
 >>> 中止的残局 #B04
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -116,21 +86,12 @@ h1{font-size:52px;margin-bottom:46px}
 <div class="tag">→ repl.ts · loop.ts</div>
 </div></body></html>
 
---- narration ---
-中止后还有一盘残局
-已经产生的部分输出，必须存进历史
-没执行完的工具，补一条 aborted 结果
-为什么这么较真
-因为丢了它，下一轮上下文就有空洞
-**完整性比干净更重要**
-
 
 >>> 会话落盘 #B05
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -159,21 +120,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:29px;line-height:1.9;backgr
 <div class="tag">→ session.ts</div>
 </div></body></html>
 
---- narration ---
-会话用 JSONL，一行一条消息，追加写
-为什么不是退出时写整个文件
-因为 Ctrl+C 和断电都不该丢历史
-追加写最多丢最后一行
-读取时跳过坏行，崩溃留下的半行
-不至于毁掉整个会话
-
 
 >>> 上下文怎么花光的 #B06
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -208,23 +160,12 @@ h1{font-size:54px;margin-bottom:56px}
 <div class="tag">→ repl.ts · context.ts</div>
 </div></body></html>
 
---- narration ---
-聊久了上下文会满
-history 只报总量，谁吃掉的，要自己加分类统计
-这正是本课的练习
-结论先给你：**工具结果是大头**
-一次 read 就是几千 token，几次就见底
-24,000 是我们自己划的安全线，约为窗口四成
-超它就地裁剪；真超 65,536，服务端才 400
-这是第五课最容易踩的死法之一
-
 
 >>> 系数要实测 #B07
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -254,23 +195,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.9;backgr
 <div class="tag">→ context.ts</div>
 </div></body></html>
 
---- narration ---
-token 估算不引依赖，但系数要 **实测**
-方法很土：发一次请求，读 usage 字段
-中文零点五八 token 每字
-代码三点七字符每 token
-两个常见错误都别犯
-一刀切断以三，中文低估近两倍，裁剪形同虚设
-按一字一 token，又高估太多，历史被白白丢掉
-十分钟的实测，胜过博客抄来的经验值
-
 
 >>> 成组裁剪 #B08
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「fitContext · 丢弃必须成组」字号 52px。
 旁白第 1 行期间：中央出现一条消息时间轴（横向，宽 1700px），从左到右排列 6 轮共 16 张卡片代表消息——[sys] | [u₁] [asst₁+tools] [tool] | [u₂] [asst₂] | [u₃] [asst₃+tools] [tool] | [u₄] [asst₄] | [u₅] [asst₅+tools] [tool] | [u₆] [asst₆]，轮与轮之间留稍大间隙（16px）以显出分组，user/assistant/tool 用不同底色（#1f3a5f / #2ea04326 / #4b4237），卡片高 120px，字号 22px 等宽，首尾卡片不超出画布边界。卡面标签一律用上述缩写（sys / uₙ / asstₙ / tool），不得写全拼「assistant」「system」，避免 90px 卡面文字溢出。
@@ -280,22 +210,12 @@ token 估算不引依赖，但系数要 **实测**
 旁白第 5 行期间：底部浮现结论条（宽 1420px，#161b22 底，左 8px accent 边）：「你为了避免 400 做的裁剪，可能制造另一个 400」字号 31px。
 画面左下角常驻小字标注「→ context.ts」，字号 22px，颜色 #8b949e；避让底部 120px 字幕区。
 
---- narration ---
-裁剪策略朴素，但必须正确
-system 永远保留，**最近 4 轮**优先保
-从最老的开始丢
-关键是 **成组**：assistant 和它的 tool 结果同生共死
-只丢一半，就产生孤儿 tool_call_id
-你为了避免 400 做的裁剪
-制造了 **另一个 400**
-
 
 >>> 重试的纪律 #B09
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -334,22 +254,12 @@ li::before{position:absolute;left:0;font-size:28px}
 <div class="tag">→ retry.ts</div>
 </div></body></html>
 
---- narration ---
-网络会抖，重试要克制
-网络错误、五开头的、四二九，带抖动的指数退避
-其余四开头的，**绝不重试**
-四百通常是消息结构有错
-重试只会把同一个错再发三遍
-还会掩盖真正的 bug
-每次重试都要打印，不要静默
-
 
 >>> 首 token 分界线 #B10
 @enter: slide-left
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「流式请求的重试窗口」字号 52px。
 旁白第 1 行期间：画面中央出现一条水平时间轴（宽 1560px、6px 高、#30363d），左端点标「发起请求」右端点标「流结束」（字号 28px 等宽 #8b949e）。
@@ -360,30 +270,11 @@ li::before{position:absolute;left:0;font-size:28px}
 旁白第 6、7 行期间：底部浮现结论条（宽 1400px、#161b22 底、左 8px accent 边）：「首 token 之后失败，只能作为错误上报」字号 31px。
 画面左下角常驻小字标注「→ llm.ts · retry.ts」，字号 22px，颜色 #8b949e；避让底部 120px 字幕区。
 
---- narration ---
-流式请求的重试窗口只有一段
-从发起到收到 **第一个 token**
-实现里收得更紧：**响应头**一到手就不再重试
-这个窗口里失败，可以安全重来
-已经吐了一半再重放，内容会重复
-所以首 token 之后失败
-只能作为错误上报
-
 
 >>> 见真章与 pi 对照 #B11
 @enter: fade-up
 @exit: fade
 @visual: video(./assets/session-resume.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/session-resume.mp4）
 真实录屏：两次单发——先存「代号紫葡萄」，再 -s vdemo -c 续聊答出代号。
-
---- narration ---
-见真章
-连续聊十几轮，不炸上下文
-中途 Ctrl+C，只停本轮还能继续
-退出后再 -c 续聊，它记得上文
-对照 pi：它会把旧对话压缩成摘要
-丢历史还是压历史，没有免费的午餐
-下一课，让它去交付真东西

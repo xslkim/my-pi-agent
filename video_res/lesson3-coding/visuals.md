@@ -3,19 +3,11 @@
 @exit: fade
 @visual: animation
 
---- visual ---
 标题页（命中预制组件库 TitleCard）：
 kicker：「第 3 课 · L3」
 主标题：「让 agent 改代码」
 副标题：「为什么是四个工具，而不是四十个？」
 居中排版，主题默认配色。
-
---- narration ---
-Claude Code、Cursor、pi，剥开都是同一件套
-读文件、写文件、改文件、跑命令
-这一课我们自己写这四个
-但你会发现真正难的不是怎么读文件
-是 **怎么不让它把事情搞砸**
 
 
 >>> 裸实现 #B02
@@ -23,7 +15,6 @@ Claude Code、Cursor、pi，剥开都是同一件套
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -43,20 +34,12 @@ bash:  exec(args.command)</pre>
 <b>接下来这一课，专门用来打碎这份兴奋。</b></div>
 </div></body></html>
 
---- narration ---
-四个工具的裸实现，二十分钟写完
-跑一下，它真的能改文件了
-你会有点兴奋
-接下来这一课
-专门用来 **打碎这份兴奋**
-
 
 >>> 故障 A · 路径逃逸 #B03
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -85,20 +68,12 @@ code{font-family:"JetBrains Mono",monospace;color:#a5d6ff}
 错误信息保留模型的<b>原始输入</b>，方便它自己改路径重试。</div>
 </div></body></html>
 
---- narration ---
-故障一，路径逃逸
-让它读工作目录外面的文件
-它读到了，工作目录形同虚设
-修法是 resolveInside
-用 path.relative 判断越界，抛错并保留原始输入
-
 
 >>> 前缀陷阱 #B04
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -128,21 +103,12 @@ code{font-family:"JetBrains Mono",monospace}
 </div>
 </div></body></html>
 
---- narration ---
-顺带一个陷阱题
-为什么不用字符串前缀判断
-因为 work 和 work-evil，前缀一模一样
-**字符串前缀不等于路径包含**
-必须先 resolve，再 relative，再看结果
-是不是以两点开头
-
 
 >>> 软链与约束的边界 #B05
 @enter: fade-up
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「软链逃逸与约束的边界」字号 52px。
 旁白第 1 行期间：画面中央画一个工作区：一个大的圆角矩形「工作目录」（1400px 宽 420px 高，#161b22 底、#30363d 边框、居中标签字号 36px），内部左下有一个文件夹图标和文字 `secret.txt`。
@@ -152,21 +118,12 @@ code{font-family:"JetBrains Mono",monospace}
 旁白第 5 行期间：底部浮现结论条（宽 1400px、#161b22 底、左 8px accent 边框）「诚实画出约束的边界，比假装安全有价值」字号 32px。
 避让底部 120px 字幕区。
 
---- narration ---
-相对路径挡住了，软链还挡不住
-目录里一个指向外部的链接，就能绕过全部检查
-修法：已存在的路径，用 realpath 再验一次真实位置
-但从检查到真正读写，仍有一个竞态窗口
-堵死它需要的系统调用，Node 没有暴露
-**诚实画出约束的边界**，比假装安全有价值
-
 
 >>> 故障 B · 上下文爆炸 #B06
 @enter: slide-left
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -191,22 +148,12 @@ code{font-family:"JetBrains Mono",monospace;color:#a5d6ff}
 <div class="foot">阈值不是拍脑袋：要按 <b>token 占比</b> 算账。<br>截断后<code class="r">必须告诉模型被截断了</code>——静默截断让它以为看完了全文，比报错更糟。</div>
 </div></body></html>
 
---- narration ---
-故障二，上下文爆炸
-一个五 MB 的文件塞进请求，直接 400
-整个会话作废，这是第五课最容易的死法
-修法是截断，默认两百行二十 KB
-阈值按 token 占比算，约占上下文的百分之八
-关键是截断后 **必须告诉模型**
-静默截断比报错更糟
-
 
 >>> 故障 C · edit 改错地方 #B07
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -226,20 +173,12 @@ pre{font-family:"JetBrains Mono",monospace;font-size:31px;line-height:1.95;backg
 出现多次 → 报错并列出<b>全部行号</b>，文件一个字节都不动。</div>
 </div></body></html>
 
---- narration ---
-故障三，edit 改错地方
-文件里有三处相同代码，replace 只改第一个
-而且 **静默失败**，没有任何报错
-修法是这一课最重要的规则：唯一匹配
-出现多次就拒绝执行，并列出全部行号
-
 
 >>> 好错误信息 #B08
 @enter: fade-up
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -265,20 +204,12 @@ pre b{color:#58a6ff;font-weight:700}
 <div class="note">行号是给模型的 <b>定位坐标</b>，那句英文提示是给模型的 <b>修复指引</b>。<br>好的错误信息，是 agent 的一部分。</div>
 </div></body></html>
 
---- narration ---
-注意报错里的两个细节
-行号，和那句「补充更多上下文」
-它们都不是写给人的，是 **写给模型的**
-模型读到会去读那几行，补上下文重试
-好的错误信息，是 agent 的一部分
-
 
 >>> 故障 D · 命令挂起 #B09
 @enter: slide-left
 @exit: fade
 @visual: animation
 
---- visual ---
 深色背景 #0d1117 填满画面，视觉跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：
 顶部标题「故障 D · 命令挂起与进程树」字号 52px。
 旁白第 1 行期间：中央出现进程树图：顶部节点 `bash -c "sleep 300"`（圆角卡 340x110px，#161b22 底，字号 30px 等宽），下方两个子节点 `sleep 300` 和 `node server.ts`（各 300x100px），节点间用 #8b949e 线连接；整棵树上方一个时钟图标缓慢旋转，标注「agent 卡死，Ctrl+C 也不一定救得回来」字号 28px #ff7b72。
@@ -287,22 +218,12 @@ pre b{color:#58a6ff;font-weight:700}
 旁白第 5 行期间：底部浮现两行等宽代码（字号 28px，#a5d6ff）：`Windows: taskkill /PID <pid> /T /F` 和 `POSIX:   process.kill(-pid)`，左 6px accent 边框。
 避让底部 120px 字幕区。
 
---- narration ---
-故障四，命令挂起
-一个等待输入的命令，能让 agent 永远卡死
-修法是超时，加 **杀进程树**
-注意是进程树，不是进程
-只杀 bash 会留下孤儿进程占着端口
-Windows 用 taskkill 斜杠 T
-POSIX 杀进程组
-
 
 >>> Windows 的真坑 #B10
 @enter: fade
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -323,22 +244,12 @@ C:\Users\you\...\WindowsApps\bash.exe      <span class="c">← 也是 WSL</span>
 <div class="foot">在 WSL 眼里，<b>G 盘是 /mnt/g</b>——agent 会在一个和文件工具<b>完全不同的文件系统</b>里操作，症状极难排查。<br>所以 shell 必须<b>显式探测</b>：优先 Git Bash，启动时打印实际使用的路径自证。</div>
 </div></body></html>
 
---- narration ---
-Windows 上还有一个专属大坑
-系统里有三个 bash，System32 那个是 **WSL**
-在它眼里 G 盘是斜杠 mnt 斜杠 g
-agent 用它会写错地方，报错还看不出根因
-排查这个能耗掉一下午
-所以 shell 要显式探测，优先 Git Bash
-启动时打印一次路径自证
-
 
 >>> system prompt #B11
 @enter: fade-up
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -364,31 +275,14 @@ pre{font-family:"JetBrains Mono",monospace;font-size:30px;line-height:1.95;backg
 </div>
 </div></body></html>
 
---- narration ---
-工具装好了，还要告诉模型怎么用
-system prompt 只有五条，短、具体、可执行
-核心原则只有一句话
-**prompt 说的和代码做的必须一一对应**
-只写不做等于没写
-做了不说，模型会反复撞墙浪费轮次
-
 
 >>> 见真章 #B12
 @enter: zoom-in
 @exit: fade
 @visual: video(./assets/hellojs-demo.mp4)
 
---- visual ---
 （此描述仅作文档用途，实际使用 ./assets/hellojs-demo.mp4）
 真实录屏：agent 在 demo/tmp 创建 hello.js 并用 node 运行验证。
-
---- narration ---
-见真章
-让它创建一个打印 hello world 的文件
-并跑一遍验证
-它先 write，再 bash 运行，最后汇报改动
-亲眼看它干活的这一刻
-七百多行代码，一个能改代码的 agent
 
 
 >>> pi 对照 #B13
@@ -396,7 +290,6 @@ system prompt 只有五条，短、具体、可执行
 @exit: fade
 @visual: html
 
---- visual ---
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
@@ -420,11 +313,3 @@ h1{font-size:54px;margin-bottom:48px}
 </div>
 <div class="foot">四个坑已经足够理解这类工具的<b>设计原则</b>：<br>约束在代码里，不在愿望里。</div>
 </div></body></html>
-
---- narration ---
-pi 的 edit 连组件六百多行
-执行环境近七百行
-它踩了四十个坑，我们今天踩了四个
-但四个已经足够让你理解
-这类工具的设计原则
-下一课，让它变得每天能用
