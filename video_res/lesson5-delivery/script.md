@@ -4,11 +4,12 @@
 @visual: animation
 
 --- visual ---
-标题页（命中预制组件库 TitleCard）：
-kicker：「第 5 课 · L5」
-主标题：「让 agent 交付」
-副标题：「任务是真的 · 验收是自动化的 · 失败是公开的」
-居中排版，主题默认配色。
+标题页（基于预制组件库 TitleCard，外加全屏装饰层，画面覆盖率必须 ≥60%，不允许留白）：
+- 背景：深色 (#0d1117) 填满整个 1920×1080 画布（含底部字幕区，不留黑边）；叠加一个居中的大面积 accent 色 (#58a6ff) 径向光晕（低透明度、缓慢呼吸），以及 2–3 个半透明装饰光斑在画面四角附近缓慢漂移。
+- 顶部带：距画面顶部约 70px 处居中放 kicker「第 5 课 · L5」，字号 30px，颜色 #8b949e，字距加宽。
+- 中央：主标题「让 agent 交付」，粗体，字号 120px，颜色 #e6edf3，水平居中，整体宽度占画布 ≥60%；主标题下方 28px 处一条 accent 色 (#58a6ff) 横线（宽 360px、高 6px），从左向右扫入；横线下方 32px 放副标题「任务是真的 · 验收是自动化的 · 失败是公开的」，字号 46px，颜色 #8b949e，居中。
+- 底部带：在字幕安全区之上（底边距画面底部 ≥160px）放一行课程回顾小字「L1 骨架 · L2 工具 · L3 写码 · L4 好用 · L5 交付」，字号 26px，颜色 #8b949e，居中，「L5 交付」用 accent 色 (#58a6ff) 高亮。
+- 动效：kicker → 主标题 → 横线 → 副标题 依次淡入上移（各间隔 0.3s），光晕与光斑全程缓慢呼吸漂移；上/中/下三带都有可见内容，四个角落不空。
 
 --- narration ---
 最后一课不是讲课，是 **交付**
@@ -57,7 +58,7 @@ server.ts   node:http    注册/登录/登出/me 四个接口 + 静态文件
 密码 scrypt 加盐哈希，**禁止明文**
 会话用 httpOnly cookie
 前端原生 JS
-要求只有一条，零依赖，全程不干预
+约束就三条：零依赖，两轮逐字相同的 prompt，全程不干预
 
 
 >>> 验收先行 #B03
@@ -90,7 +91,7 @@ td:last-child{color:#e6edf3}
 <tr><td>9</td><td>首页返回含表单的 HTML</td></tr>
 <tr class="hot"><td>10</td><td>直接搜 data.db 的原始字节——明文密码一个字节都不许出现</td></tr>
 </table>
-<div class="foot">第 10 条检验的不是「能跑」，是「有没有按要求做对」。<br>这条规则解决了 agent 演示最常见的作弊：<b>改考卷让它过</b>。</div>
+<div class="foot">第 10 条检验的不是「能跑」，是「有没有按要求做对」。<br>它抓的是最常见的偷懒：先存明文，「<b>跑通了再说</b>」，然后忘了回来改。</div>
 </div></body></html>
 
 --- narration ---
@@ -114,7 +115,8 @@ td:last-child{color:#e6edf3}
 旁白第 2 行期间：画面中央出现一张「考卷」卡片（600x260px，#161b22 底、金色 #d2a8ff 边框，内容 "acceptance/*.ts + task-prompt.md" 字号 28px 等宽），左侧出现一把锁图标和标签「锁 1 · cwd 路径约束」字号 30px accent #58a6ff，一条 accent 实线从 agent 图标（左侧小圆卡 "agent"）指向考卷的方向被锁 1 拦截，弹出红色 ✗。
 旁白第 3 行期间：agent 下方冒出第二条弯曲虚线路径，标注「bash 绝对路径绕过」字号 26px #ff7b72，虚线成功穿过锁 1 到达考卷附近——诚实展示缺口。
 旁白第 4 行期间：考卷下方升起第二道更大的盾牌图标「锁 2 · sha256 校验和」字号 30px #3fb950，虚线路径被盾牌拦下弹回，弹出绿色 ✓，考卷卡上方浮现一行等宽小字 `node acceptance/verify-lock.ts → OK` 字号 26px。
-旁白第 5 行期间：底部浮现结论条（宽 1460px、#161b22 底、左 8px accent 边）：「声明式约束挡不住能执行任意命令的工具——这正是 pi 要做沙箱的原因」字号 30px。
+旁白第 5–6 行期间：盾牌与 verify-lock 小字保持常亮（第 6 行讲到人手动跑 verify-lock）。
+旁白第 7–8 行期间：底部浮现结论条（宽 1460px、#161b22 底、左 8px accent 边）：「声明式约束挡不住能执行任意命令的工具——这正是 pi 要做沙箱的原因」字号 30px。
 避让底部 120px 字幕区。
 
 --- narration ---
@@ -123,6 +125,7 @@ agent 不许改考卷，上两道锁
 但 bash 能用绝对路径绕过，我们诚实承认
 第二道，校验和兜底
 考卷改动一个字节，验收作废
+它是人手动跑的：每轮验收前，人先跑一次 verify-lock
 **声明式约束挡不住能执行任意命令的工具**
 这正是 pi 要做沙箱和权限确认的原因
 
@@ -153,12 +156,15 @@ html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans S
 <div>&nbsp;</div>
 <div class="dim">任务描述来自锁定的 prompt 文件</div>
 <div class="dim">两轮运行逐字一致，由校验和保证</div>
+<div class="dim">环境：Windows + Git Bash + 本地模型（局域网）</div>
 </div>
 </div>
 </body></html>
 
 --- narration ---
 裸跑开始，全程录屏，不干预
+跑在 Windows + Git Bash 上，模型在局域网
+考卷和 prompt 都在仓库里，照着跑就行
 任务描述来自锁定的 prompt 文件
 两轮运行逐字一致，由校验和保证
 课程的设计里，它预期会失败
@@ -225,11 +231,15 @@ td:first-child{font-family:"JetBrains Mono",monospace;color:#79c0ff;white-space:
 .r{color:#ff7b72}.g{color:#3fb950}
 .note{background:#0d1117;border:1px solid #30363d;border-left:8px solid #58a6ff;border-radius:14px;padding:30px 42px;font-size:32px;line-height:1.8}
 .note b{color:#58a6ff}
+.pre td{border-top:2px dashed #58a6ff}
+.pre td:first-child{color:#58a6ff}
+.pre .plist{color:#8b949e;font-size:27px}
 </style></head><body><div class="wrap">
 <h1>失败记录表 · 本课最重要的产出</h1>
 <table>
 <tr><th>#</th><th>现象</th><th>根因</th><th>对策</th><th>状态</th></tr>
-<tr><td>1</td><td>后台起服务自测，工具永久挂死，需人工杀 3100 端口进程</td><td>bash 工具等 close 而非 exit；后台守护进程握住管道</td><td>exit+宽限 destroy；bash 侧 kill $(jobs -p) 清场</td><td class="g">已由 T23 修复</td></tr>
+<tr class="pre"><td>预判</td><td class="plist">没 ls · 没 grep · 步数不够 · 上下文吃满 · edit 原样重试 · 不自验证 · 敢跑 rm -rf</td><td class="plist">进场前列出的七项缺口</td><td class="plist">——</td><td class="plist">run1 里基本都没发生</td></tr>
+<tr><td>1</td><td>后台起服务自测，工具永久挂死，需人工杀 3100 端口进程</td><td>bash 工具等 close 而非 exit；后台守护进程握住管道</td><td>exit+宽限 destroy；bash 侧 kill $(jobs -p) 清场</td><td class="g">已修复 · 见下一块</td></tr>
 </table>
 <div class="note">每一个失败，都指向前四课某个<b>被简化掉的决定</b>。<br>
 预判清单里没发生的，一个都不做——<b>加固由证据驱动，不由想象驱动</b>。</div>
@@ -265,23 +275,35 @@ h1{font-size:54px;margin-bottom:46px}
 .x{color:#ff7b72}
 .foot{background:#0d1117;border:1px solid #30363d;border-left:8px solid #3fb950;border-radius:14px;padding:28px 40px;font-size:30px;line-height:1.7}
 .foot b{color:#3fb950}
+.code{display:block;margin-top:18px;background:#0d1117;border:1px solid #30363d;border-radius:10px;padding:16px 22px;font-family:"JetBrains Mono",monospace;font-size:24px;line-height:1.5;color:#a5d6ff;white-space:pre}
+.code .k{color:#ff7b72}.code .c{color:#8b949e}
 </style></head><body><div class="wrap">
 <h1>回炉：一个事故，挖出三层</h1>
 <div class="steps">
-<div class="s"><div class="n">1</div><div class="t">改返回时机：以进程 <b>exit</b> 为准，宽限 1s 后主动 <code>destroy()</code> 流</div></div>
-<div class="s"><div class="n">2</div><div class="t">发现仍漏杀：<span class="x">taskkill /T 够不着 MSYS 后台任务</span>——它们不在 Windows 进程树里</div></div>
-<div class="s"><div class="n">3</div><div class="t">最终让 bash 自己清场：命令后缀 <code>; __rc=$?; kill $(jobs -p); exit $__rc</code></div></div>
+<div class="s"><div class="n">1</div><div class="t">改返回时机：以进程 <b>exit</b> 为准，宽限 1s 后主动 <code>destroy()</code> 流<span class="code"><span class="c">// 节选自 src/tools/bash.ts，完整版见仓库</span>
+child.<span class="k">on</span>(<span class="k">"exit"</span>, (c) =&gt; {
+  <span class="k">const</span> grace = <span class="k">setTimeout</span>(() =&gt; {
+    child.stdout?.destroy(); child.stderr?.destroy();
+    resolve(c);              <span class="c">// 不等 close，宽限到点就返回</span>
+  }, 1_000);
+  child.<span class="k">on</span>(<span class="k">"close"</span>, () =&gt; { clearTimeout(grace); resolve(c); });
+});</span></div></div>
+<div class="s"><div class="n">2</div><div class="t">发现仍漏杀：<span class="x">Git Bash 的后台任务根本不在 Windows 进程树里</span>，taskkill /T 够不着（这层是 Windows 专属）</div></div>
+<div class="s"><div class="n">3</div><div class="t">最终让 bash 自己清场：命令后缀 <code>; __rc=$?; kill $(jobs -p); exit $__rc</code>（POSIX 通用）</div></div>
 </div>
-<div class="foot">回归测试覆盖三件事：<b>不挂死 · 后台进程被清 · 退出码保留</b>。<br>（中间还试过 trap 'kill 0'——把 bash 自己也杀了，退出码变 3840，弃用。）</div>
+<div class="foot">回归测试覆盖三件事：<b>不挂死 · 后台进程被清 · 退出码保留</b>（这三项检查各平台都适用）。<br>中间还试过 trap 'kill 0'——把 bash 自己也杀了，它收到 SIGTERM，退出码变 3840（=15×256），弃用。</div>
 </div></body></html>
 
 --- narration ---
 回炉修复，一个事故挖出三层
+还记得吗，我们跑在 Git Bash 上
 第一层，改成以进程 exit 为准返回
+宽限一秒后主动 destroy 流，不再傻等 close
 第二层，又发现外部杀不到后台任务
-它们根本不在 Windows 进程树里
+Git Bash 的后台任务，根本不在 Windows 进程树里
 第三层，让 bash 自己清场
 退出前 kill 掉所有后台任务
+第一层和第三层是通用的，第二层是 Windows 专属
 修复的每一步，都有实验证据
 
 
@@ -298,6 +320,8 @@ h1{font-size:54px;margin-bottom:46px}
 修完之后，run2
 同一个命令，同一个 prompt，从空目录重跑
 这一次自测没有卡死
+而且只用了 **7 步**、9 次工具调用
+上次是 11 步、17 次
 先验考卷，校验和一致
 再跑冒烟测试
 十条断言，**全绿**
@@ -312,8 +336,8 @@ h1{font-size:54px;margin-bottom:46px}
 <!doctype html><html><head><meta charset="utf-8"><style>
 *{margin:0;box-sizing:border-box}
 html,body{width:1920px;height:1080px;background:#0d1117;font-family:"Noto Sans SC",sans-serif;color:#e6edf3}
-.wrap{padding:90px 110px 0}
-h1{font-size:56px;text-align:center;margin-bottom:60px}
+.wrap{padding:70px 110px 0}
+h1{font-size:56px;text-align:center;margin-bottom:50px}
 table{width:100%;border-collapse:collapse;font-size:31px}
 th{text-align:left;padding:0 30px 20px;color:#8b949e;font-weight:400;font-size:28px}
 td{padding:26px 30px;border-top:1px solid #30363d}
@@ -328,6 +352,9 @@ td:nth-child(3){color:#3fb950}
 <tr><th></th><th>run1（加固前）</th><th>run2（加固后）</th></tr>
 <tr><td>登录应用交付</td><td>✔ 通过（10/10）</td><td>✔ 通过（10/10）</td></tr>
 <tr><td>bash 自测环节</td><td>✖ 永久挂死</td><td>✔ 正常完成</td></tr>
+<tr><td>步数</td><td>11 / 30</td><td>7 / 30</td></tr>
+<tr><td>工具调用</td><td>17 次</td><td>9 次</td></tr>
+<tr><td>墙钟时间</td><td>约 26 分钟</td><td>约 15 分钟</td></tr>
 <tr><td>人工救援</td><td>1 次（杀 3100 端口进程）</td><td>0 次</td></tr>
 </table>
 <div class="foot">任务两次都做出来了——差别在于，run1 需要 <b>人</b> 救一次，run2 不需要。<br>把人从救援里解放出来，这才是加固的意义。</div>
@@ -364,8 +391,8 @@ h1{font-size:54px;margin-bottom:46px}
 <h1>复盘三问</h1>
 <div class="row">
 <div class="q"><div class="qh">它为什么能成？</div><div class="qa">任务边界清晰<br>验收可执行<br>工具够用</div></div>
-<div class="q"><div class="qh">它为什么差点没成？</div><div class="qa">每个被简化掉的决定<br>都被真实任务逼出来一次<br>没有普遍正确的设计<br>只有针对约束的取舍</div></div>
-<div class="q"><div class="qh">pi 是怎么解决的？</div><div class="qa">摘要压缩 · 沙箱<br>并行工具 · 可恢复中止<br>每一个都对应今天踩过的坑</div></div>
+<div class="q"><div class="qh">它为什么差点没成？</div><div class="qa">每个被简化掉的决定<br>都可能被真实任务逼出来<br>没有普遍正确的设计<br>只有针对约束的取舍</div></div>
+<div class="q"><div class="qh">pi 是怎么解决的？</div><div class="qa">摘要压缩 · 沙箱<br>并行工具 · 可恢复中止<br>每个都对应这门课里<br>我们简化掉、或差点踩中的决定</div></div>
 </div>
 <div class="fin">这门课的终点，不是造一个替代 pi 的 agent<br>而是获得 <b>读懂它、并判断自己需不需要它</b> 的能力</div>
 </div></body></html>
@@ -374,9 +401,10 @@ h1{font-size:54px;margin-bottom:46px}
 最后复盘三个问题
 它为什么能成？边界清晰，验收可执行，工具够用
 它为什么差点没成？
-每个简化决定都被真实任务逼出来一次
+每个简化决定，都可能被真实任务逼出来
 pi 是怎么解决的？
-摘要、沙箱、并行工具，每个都对应今天的坑
+摘要压缩、沙箱、并行工具、可恢复中止
+每个都对应这门课里，我们简化掉、或差点踩中的决定
 这门课的终点
 不是造一个替代 pi 的 agent
 而是获得 **读懂它、并判断自己需不需要它** 的能力

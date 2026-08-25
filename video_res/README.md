@@ -9,7 +9,7 @@
 | `lesson1-talk/` | 第 1 课 · 让模型说话（课程总览 + 手写 SSE 客户端） | `pi-agent-lesson1-talk` | 19 | ~7 min |
 | `lesson2-tools/` | 第 2 课 · 让模型动手（tool calling 与 agent loop） | `pi-agent-lesson2-tools` | 12 | ~4.5 min |
 | `lesson3-coding/` | 第 3 课 · 让 agent 改代码（四个受约束的工具） | `pi-agent-lesson3-coding` | 13 | ~5 min |
-| `lesson4-usable/` | 第 4 课 · 让 agent 好用（REPL · 中止 · 会话 · 上下文 · 重试） | `pi-agent-lesson4-usable` | 11 | ~4.5 min |
+| `lesson4-usable/` | 第 4 课 · 让 agent 好用（REPL · 中止 · 会话 · 上下文 · 重试） | `pi-agent-lesson4-usable` | 11 | ~5 min |
 | `lesson5-delivery/` | 第 5 课 · 让 agent 交付（登录应用实战） | `pi-agent-lesson5-delivery` | 12 | ~5 min |
 
 每个文件夹内：`meta.md`（元数据）+ `script.md`（`>>>` 分块脚本）。
