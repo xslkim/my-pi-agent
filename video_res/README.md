@@ -50,3 +50,24 @@ AutoVideo 工程内的项目目录不复制资源，逐文件软连接回本仓�
 
 把任一课程项目目录（例如 `/home/xsl/AutoVideo/project/pi-agent-lesson1-talk`）交给负责构建的 Agent，
 按 `/home/xsl/AutoVideo/docs/BUILD.md` 流程生成 MP4 即可。五个视频相互独立，可分别构建。
+
+## 写新脚本前必读
+
+`guidelines/` 下有三份**写作主法** + 两份**通用工序**（编号 01–05 即流水线位置，非优先级）：
+
+**写作主法（每次课程按症状三选一）：**
+
+| 文档 | 方案 | 什么时候选它 |
+|---|---|---|
+| [01-goal-contract.md](guidelines/01-goal-contract.md) | 三层目标契约法 | 新系列从零起步；结构松散、内容膨胀 |
+| [02-audience-persona.md](guidelines/02-audience-persona.md) | 受众画像先行法 | 受众混杂、深浅拿不准；要出多受众版本 |
+| [04-block-design.md](guidelines/04-block-design.md) | 单块单点·先演后讲法 | 结构已定，要提高「看完能学会」的教学质量 |
+
+**通用工序（不在选择之列，每次必过）：**
+
+| 文档 | 工序 | 时机 |
+|---|---|---|
+| [03-fact-baseline.md](guidelines/03-fact-baseline.md) | 事实基线锁定 | 动笔前：建事实表，写稿只引用表内事实 |
+| [05-av-acceptance.md](guidelines/05-av-acceptance.md) | 音画预算与验收 | 交构建前：时长预算 + 逐项验收清单 |
+
+五份文档的「通用底线」节逐字一致，改动须五处同步（`guidelines/check-baseline.sh` 可校验）。
