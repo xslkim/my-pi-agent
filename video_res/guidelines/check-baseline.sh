@@ -3,7 +3,7 @@
 set -u
 cd "$(dirname "$0")"
 ref=""; refname=""
-for f in 0[1-5]-*.md; do
+for f in method-*.md process-*.md; do
   cur=$(sed -n '/^## 通用底线/,/^## /p' "$f" | sed '1d;$d')
   if [ -z "$ref" ]; then
     ref="$cur"; refname="$f"
