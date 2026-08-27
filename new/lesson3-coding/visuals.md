@@ -337,9 +337,9 @@ Rules:
 @exit: fade
 @visual: video(./assets/hellojs-demo.mp4)
 
-（此描述仅作文档参考，实际使用 ./assets/hellojs-demo.mp4 视频文件；素材时长 17.8s）
+（此描述仅作文档参考，实际使用 ./assets/hellojs-demo.mp4 视频文件；素材时长 31.5s）
 终端录屏：agent 先用 read 工具读 hello.js，再用 edit 工具完成唯一匹配替换，文件被改好。
-<!-- 素材复用自旧版脚本 video_res/lesson3-coding -->
+<!-- 2026-08-28 重录：read → edit 改 demo/tmp/hello.js（deepseek-v4-flash），31.5s。录制场景 record.mjs 的 l3-coding -->
 
 
 >>> pi 对照：行数对比 #B11

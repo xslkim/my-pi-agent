@@ -3,6 +3,7 @@
 > 规则（工序：事实基线锁定）：脚本只准引用本表事实；画面文字逐字取「上屏形式」，旁白逐字取「上口形式」，不改写、不约数、不换单位。本表没有的事实不进脚本。
 > 核查环境：本机 Linux，node v22.23.2（< 23.6，测试经 `node --experimental-strip-types --test` 运行），2026-08-27 实测。pi 参照实现 @ `086c32e`（submodule 已 checkout）。
 > 敏感信息：LLM 内网地址、API key、真实用户名一律不进脚本；脚本只出现环境变量名。
+> 录制说明（2026-08-28）：五段演示录屏全部重录——curl / cli 演示用 deepseek-v4-flash（OpenAI 兼容端点，SSE 协议字段与课程默认 qwen3.8-27b 一致，录屏字节中可见该模型名）；本机 node 22 经 `--experimental-strip-types` 运行，录屏展示的命令为课程目标环境（Node ≥ 23.6）写法。run2 延时与 pi 源码滚动为本地素材重渲染（放慢回放）。工具 `new/tools/record.mjs` + `new/tools/render.mjs`，cast 存 `new/casts/`。
 
 ## 通用
 
@@ -28,9 +29,9 @@
 | SSE 协议四点 | 每块 `data: {...}\n\n`、以 `data: [DONE]` 结束；`choices[0].delta.content` 正文增量；`delta.reasoning_content` 思考增量（llama.cpp 特有）；`finish_reason` = stop / tool_calls / length，末块带 usage | `docs/teaching-agent-plan.md:84-90` | 人工逐字比对 | data: / [DONE] / delta.content / reasoning_content | 见发音词典 |
 | tool_calls 增量 | `arguments` 是字符串碎片，按 index 累加后再 `JSON.parse` | `docs/teaching-agent-plan.md:88` | 人工逐字比对 | 按 index 累加 | 按 index 累加 |
 | pi 兼容层行数 | `openai-completions.ts` 1577 行 @086c32e（处理 40 家 provider 兼容等） | `pi/packages/ai/src/api/openai-completions.ts`；`docs/teaching-agent-plan.md:257` | `wc -l`（已执行）；「40 家」文档比对 | 1577 行 | 一千五百七十七行 |
-| 素材 curl-sse.mp4 | 15.3s（curl 打端点看原始 SSE 字节流录屏） | `new/lesson1-talk/assets/curl-sse.mp4` | `ffprobe` 实测 15.267s | — | — |
-| 素材 talk-demo.mp4 | 16.0s（`node src/cli.ts "你好"` 逐字流出录屏） | `new/lesson1-talk/assets/talk-demo.mp4` | `ffprobe` 实测 16.033s | — | — |
-| 素材 pi-scroll.mp4 | 19.1s（pi 源码滚动录屏） | `new/lesson1-talk/assets/pi-scroll.mp4` | `ffprobe` 实测 19.133s | — | — |
+| 素材 curl-sse.mp4 | 22.4s（curl 打端点看原始 SSE 字节流，2026-08-28 重录） | `new/lesson1-talk/assets/curl-sse.mp4` | `ffprobe` 实测 22.400s | — | — |
+| 素材 talk-demo.mp4 | 26.1s（`node src/cli.ts` 提问，思考与正文逐字流出，2026-08-28 重录） | `new/lesson1-talk/assets/talk-demo.mp4` | `ffprobe` 实测 26.133s | — | — |
+| 素材 pi-scroll.mp4 | 41.2s（pi `openai-completions.ts` 源码滚动，2026-08-28 自 pi @086c32e 重渲染，行 1–1200 步长 3） | `new/lesson1-talk/assets/pi-scroll.mp4` | `ffprobe` 实测 41.233s | — | — |
 
 ## 第 2 课 · 让模型动手
 
@@ -42,7 +43,7 @@
 | L2 演示产物 | calculator 算对 21*2=42 并解释 | `docs/teaching-agent-plan.md:105` + calc-tools.mp4 录像 | 录像核对（命令于录制时验证；本机无模型服务未重跑） | 21*2 = 42 | 二十一乘二等于四十二 |
 | L2 三个坑 | arguments 按 index 拼接；类型不等于校验（模型会传 `"21"` 字符串）；loop 要有 maxSteps 上限 | `docs/teaching-agent-plan.md:124` | 文档逐字比对 | maxSteps | max steps（见发音词典） |
 | pi agent loop 行数 | `agent-loop.ts` 796 行 @086c32e（并行工具、steering/follow-up 队列、生命周期钩子、中止语义） | `pi/packages/agent/src/agent-loop.ts`；`docs/teaching-agent-plan.md:258` | `wc -l`（已执行）；特性清单文档比对 | 796 行 | 七百九十六行 |
-| 素材 calc-tools.mp4 | 15.2s（calculator 演示录屏） | `new/lesson2-tools/assets/calc-tools.mp4` | `ffprobe` 实测 15.233s | — | — |
+| 素材 calc-tools.mp4 | 22.7s（calculator 单次调用算 21×2=42 并解释，2026-08-28 重录，渲染 0.66× 放慢） | `new/lesson2-tools/assets/calc-tools.mp4` | `ffprobe` 实测 22.733s | — | — |
 | 素材 pi-loop.mp4 | 22.3s（pi agent loop 源码滚动录屏） | `new/lesson2-tools/assets/pi-loop.mp4` | `ffprobe` 实测 22.333s | — | — |
 
 ## 第 3 课 · 让 agent 改代码
@@ -56,7 +57,7 @@
 | Windows 坑 | `C:\Windows\System32\bash.exe` 是 WSL，它眼里 `G:\` 是 `/mnt/g`；优先用 Git 自带 bash，否则回退 PowerShell | `docs/teaching-agent-plan.md:137` | 文档逐字比对 | /mnt/g | 见发音词典 |
 | pi edit 行数 | `edit.ts` 127 行 + `edit-diff.ts` 500 行 @086c32e（多重编辑、行尾/BOM 处理、unified diff） | `pi/packages/agent/src/harness/tools/edit.ts`、`edit-diff.ts` | `wc -l`（已执行）；特性清单文档比对 | 127 + 500 行 | 一百二十七加五百行 |
 | pi 执行环境行数 | `nodejs.ts` 695 行 @086c32e（Result 错误模型、进程树 kill、跨平台 shell 探测） | `pi/packages/agent/src/harness/env/nodejs.ts` | `wc -l`（已执行）；特性清单文档比对 | 695 行 | 六百九十五行 |
-| 素材 hellojs-demo.mp4 | 17.8s（agent 用 read+edit 改 hello.js 录屏） | `new/lesson3-coding/assets/hellojs-demo.mp4` | `ffprobe` 实测 17.800s | — | — |
+| 素材 hellojs-demo.mp4 | 31.5s（agent 用 read+edit 改 hello.js，2026-08-28 重录） | `new/lesson3-coding/assets/hellojs-demo.mp4` | `ffprobe` 实测 31.533s | — | — |
 
 ## 第 4 课 · 让 agent 好用
 
@@ -67,7 +68,7 @@
 | L4 五项改造 | REPL、Ctrl+C 只中止当前轮（AbortSignal 贯穿 fetch 与工具）、JSONL 会话持久化与 -c 续聊、上下文预算（估 token 超阈值裁最老轮次）、429/超时重试；另每轮打印耗时与 token | `docs/teaching-agent-plan.md:141` | 文档逐字比对 | — | — |
 | 超上下文的后果 | 聊超 64K 报 400 | `docs/teaching-agent-plan.md:248` | 文档逐字比对 | 64K | 六十四 K |
 | pi 会话层 | `JsonlSessionRepo`（`pi/packages/agent/src/harness/session/jsonl/repo.ts`），有分支 / lane / 压缩 / 崩溃恢复 | 文件存在已核实；特性清单 `docs/teaching-agent-plan.md:261` 文档比对 | `ls` 该文件（已执行） | — | — |
-| 素材 session-resume.mp4 | 15.4s（-c 续聊演示录屏） | `new/lesson4-usable/assets/session-resume.mp4` | `ffprobe` 实测 15.400s | — | — |
+| 素材 session-resume.mp4 | 21.1s（-s 落盘后 -c 续聊演示，2026-08-28 重录，渲染 0.8× 放慢） | `new/lesson4-usable/assets/session-resume.mp4` | `ffprobe` 实测 21.067s | — | — |
 
 ## 第 5 课 · 让 agent 交付
 
@@ -81,4 +82,4 @@
 | run2（加固后） | 交付 10/10；bash 自测 653ms 正常返回；人工救援 0 次；7 步 / 9 次工具调用；会话 token ~6.8K | `docs/runs/README.md:5-9` | 人工逐字比对 | 7 步 / 9 次 | 七步、九次工具调用 |
 | run1 vs run2 结论 | 任务两次都做成——差别不在「能不能」，在「要不要人救」 | `docs/runs/README.md:12` | 人工逐字比对 | — | — |
 | 素材 run1-timelapse.mp4 | 23.8s（run1 延时录屏） | `new/lesson5-delivery/assets/run1-timelapse.mp4` | `ffprobe` 实测 23.833s | — | — |
-| 素材 run2-timelapse.mp4 | 17.1s（run2 延时录屏） | `new/lesson5-delivery/assets/run2-timelapse.mp4` | `ffprobe` 实测 17.133s | — | — |
+| 素材 run2-timelapse.mp4 | 24.8s（run2 延时录屏；2026-08-28 自 `docs/runs/l5-run2.jsonl` 以 0.75× 放慢重渲染） | `new/lesson5-delivery/assets/run2-timelapse.mp4` | `ffprobe` 实测 24.767s | — | — |

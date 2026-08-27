@@ -57,7 +57,7 @@ while (true) {
 @visual: video(./assets/session-resume.mp4)
 
 （此描述仅作文档参考，实际使用 ./assets/session-resume.mp4 视频文件：终端录屏，演示退出后用 -c 参数续聊，上一轮上下文仍在。）
-<!-- 素材复用自旧版脚本 video_res/lesson4-usable 对应目录；素材时长 15.4s（facts.md）。录屏命令形如 `node src/cli.ts -c`，仅为录制记录，不参与生成。 -->
+<!-- 2026-08-28 重录：-s vdemo 落盘后退出，-c 续聊仍记得代号（deepseek-v4-flash），21.1s（渲染 0.8× 放慢）。录制场景 record.mjs 的 l4-session -->
 
 
 >>> 上下文预算：估 token 裁最老轮次 #B05

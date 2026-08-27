@@ -90,7 +90,7 @@ L1 是本集，卡片用 accent 色 #58a6ff 描边并轻微发光。
 @exit: fade
 @visual: video(./assets/curl-sse.mp4)
 
-<!-- 素材复用自旧版脚本 video_res/lesson1-talk/（curl 直接打 OpenAI 兼容端点、原始 SSE 字节流滚屏录屏，15.3s）。本描述仅作文档用途，不参与生成。 -->
+<!-- 2026-08-28 重录：curl 打 OpenAI 兼容端点（deepseek-v4-flash），原始 SSE 字节流滚屏，22.4s。录制场景 new/tools/record.mjs 的 l1-curl；本描述仅作文档用途，不参与生成。 -->
 终端录屏：curl 请求模型端点并要求流式返回，终端里 data: 开头的原始 SSE 字节逐行滚出，最后以 [DONE] 收尾。画面为真实终端，无额外包装。
 
 
@@ -244,7 +244,7 @@ print(delta.reasoning_content);            // 思考增量
 @exit: fade
 @visual: video(./assets/talk-demo.mp4)
 
-<!-- 素材复用自旧版脚本 video_res/lesson1-talk/（node src/cli.ts "你好"，回答与思考逐字流出录屏，16.0s）。本描述仅作文档用途，不参与生成。 -->
+<!-- 2026-08-28 重录：node src/cli.ts "用三句话解释什么是 SSE"（deepseek-v4-flash），思考与正文逐字流出，26.1s。录制场景 record.mjs 的 l1-talk；本描述仅作文档用途，不参与生成。 -->
 终端录屏：运行 node src/cli.ts 并传入问题，思考内容先逐字流出，随后正文回答逐字流出，直至流结束。画面为真实终端，无额外包装。
 
 
@@ -306,5 +306,5 @@ print(delta.reasoning_content);            // 思考增量
 @exit: fade
 @visual: video(./assets/pi-scroll.mp4)
 
-<!-- 素材复用自旧版脚本 video_res/lesson1-talk/（pi 兼容层 openai-completions.ts 源码滚动录屏，19.1s）。本描述仅作文档用途，不参与生成。 -->
+<!-- 2026-08-28 重渲染：pi @086c32e 的 openai-completions.ts 源码滚动（render.mjs --pi，行 1–1200 步长 3），41.2s。本描述仅作文档用途，不参与生成。 -->
 pi 参照实现源码滚动录屏：openai-completions.ts 的代码持续上滚，配合旁白做「78 行 vs 1577 行」的行数对照；旁白收尾给下集钩子。

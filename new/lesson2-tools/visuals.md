@@ -247,7 +247,7 @@ JSON Schema 的类型，对模型只是建议</pre>
 @visual: video(./assets/calc-tools.mp4)
 
 （此描述仅作文档参考，实际使用 ./assets/calc-tools.mp4 视频文件）
-<!-- 素材复用自旧版脚本 video_res/lesson2-tools；calculator 演示录屏，ffprobe 实测 15.2s -->
+<!-- 2026-08-28 重录：calculator 单次调用算 21×2=42 并解释（deepseek-v4-flash），22.7s（渲染 0.66× 放慢）。录制场景 record.mjs 的 l2-tools -->
 终端录屏：向 agent 提问「二十一乘二等于多少」，模型经 tool_calls 调用 calculator 工具，
 屏幕显示 21*2 = 42，随后模型给出答案与解释。演示块图标约定：▶。
 

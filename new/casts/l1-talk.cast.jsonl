@@ -1,0 +1,82 @@
+{"title":"node src/cli.ts"}
+{"t":0,"s":"o","d":"\u001b[32m$\u001b[0m node src/cli.ts \"用三句话解释什么是 SSE\"\r\n"}
+{"t":604,"s":"o","d":"\n\u001b[2m思考中…The"}
+{"t":904,"s":"o","d":" user asks i"}
+{"t":1204,"s":"o","d":"n Chinese: \""}
+{"t":1505,"s":"o","d":"用三句话解释什么是 SS"}
+{"t":1805,"s":"o","d":"E\" - \"Explai"}
+{"t":2106,"s":"o","d":"n what SSE i"}
+{"t":2405,"s":"o","d":"s in three s"}
+{"t":2983,"s":"o","d":"entences.\"\n\n"}
+{"t":3283,"s":"o","d":"SSE could me"}
+{"t":3584,"s":"o","d":"an:\n1. Serve"}
+{"t":3884,"s":"o","d":"r-Sent Event"}
+{"t":4185,"s":"o","d":"s (web techn"}
+{"t":4485,"s":"o","d":"ology)\n2. St"}
+{"t":4784,"s":"o","d":"reaming SIMD"}
+{"t":5085,"s":"o","d":" Extensions "}
+{"t":5385,"s":"o","d":"(CPU instruc"}
+{"t":5686,"s":"o","d":"tion set)\n3."}
+{"t":5986,"s":"o","d":" Sum of Squa"}
+{"t":6287,"s":"o","d":"red Errors ("}
+{"t":6587,"s":"o","d":"statistics)\n"}
+{"t":6887,"s":"o","d":"\nGiven ambig"}
+{"t":7187,"s":"o","d":"uity, but mo"}
+{"t":7487,"s":"o","d":"st common in"}
+{"t":7788,"s":"o","d":" developer c"}
+{"t":8088,"s":"o","d":"ontext, SSE "}
+{"t":8389,"s":"o","d":"= Server-Sen"}
+{"t":8689,"s":"o","d":"t Events. I'"}
+{"t":8988,"s":"o","d":"ll answer in"}
+{"t":9289,"s":"o","d":" three sente"}
+{"t":9589,"s":"o","d":"nces in Chin"}
+{"t":9889,"s":"o","d":"ese. Maybe b"}
+{"t":10190,"s":"o","d":"riefly menti"}
+{"t":10490,"s":"o","d":"on the ambig"}
+{"t":10791,"s":"o","d":"uity or just"}
+{"t":11091,"s":"o","d":" answer. The"}
+{"t":11392,"s":"o","d":" user wants "}
+{"t":11692,"s":"o","d":"three senten"}
+{"t":11992,"s":"o","d":"ces explaini"}
+{"t":12293,"s":"o","d":"ng what SSE "}
+{"t":12593,"s":"o","d":"is. I'll go "}
+{"t":12894,"s":"o","d":"with Server-"}
+{"t":13194,"s":"o","d":"Sent Events "}
+{"t":13495,"s":"o","d":"as it's most"}
+{"t":13795,"s":"o","d":" common in c"}
+{"t":14096,"s":"o","d":"oding contex"}
+{"t":14396,"s":"o","d":"ts, and perh"}
+{"t":14697,"s":"o","d":"aps note it'"}
+{"t":14997,"s":"o","d":"s a web tech"}
+{"t":15297,"s":"o","d":".\n\nActually,"}
+{"t":15597,"s":"o","d":" to be safe,"}
+{"t":15897,"s":"o","d":" I could bri"}
+{"t":16198,"s":"o","d":"efly note wh"}
+{"t":16499,"s":"o","d":"ich meaning."}
+{"t":16799,"s":"o","d":" But they as"}
+{"t":17099,"s":"o","d":"ked for thre"}
+{"t":17399,"s":"o","d":"e sentences."}
+{"t":17700,"s":"o","d":" Let me writ"}
+{"t":18000,"s":"o","d":"e three sent"}
+{"t":18301,"s":"o","d":"ences in Chi"}
+{"t":18601,"s":"o","d":"nese.\n\nNo to"}
+{"t":18901,"s":"o","d":"ols needed. "}
+{"t":19202,"s":"o","d":"Just answer."}
+{"t":19502,"s":"o","d":"\u001b[0m\nSSE（Ser"}
+{"t":19803,"s":"o","d":"ver-Sent Eve"}
+{"t":20103,"s":"o","d":"nts，服务器发送事件）"}
+{"t":20404,"s":"o","d":"是一种基于 HTTP 的"}
+{"t":20704,"s":"o","d":" Web 技术，允许服务"}
+{"t":21005,"s":"o","d":"器主动向客户端单向推送实"}
+{"t":21305,"s":"o","d":"时数据。它通过保持一个长"}
+{"t":21606,"s":"o","d":"连接，让服务器能以文本流"}
+{"t":21906,"s":"o","d":"的形式持续发送消息，客户"}
+{"t":22207,"s":"o","d":"端只需使用原生的 `Ev"}
+{"t":22507,"s":"o","d":"entSource` A"}
+{"t":22808,"s":"o","d":"PI 即可接收。相比 W"}
+{"t":23108,"s":"o","d":"ebSocket，SSE"}
+{"t":23409,"s":"o","d":" 更轻量、支持自动重连和"}
+{"t":23709,"s":"o","d":"断线续传，非常适合实时通"}
+{"t":24010,"s":"o","d":"知、股票行情、日志推送等"}
+{"t":24310,"s":"o","d":"场景。"}
+{"t":24611,"s":"o","d":"\r\n"}

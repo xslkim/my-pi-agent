@@ -1,0 +1,42 @@
+{"title":"node src/cli.ts"}
+{"t":0,"s":"o","d":"\u001b[32m$\u001b[0m node src/cli.ts \"我的代号是紫葡萄，请记住。只回答：好的\" -s vdemo\r\n"}
+{"t":903,"s":"o","d":"\n\u001b[2m思考中…The"}
+{"t":1204,"s":"o","d":" user says \"我的"}
+{"t":1505,"s":"o","d":"代号是紫葡萄，请记住。只回答"}
+{"t":1828,"s":"o","d":"：好的\" which mea"}
+{"t":2128,"s":"o","d":"ns \"My code na"}
+{"t":2429,"s":"o","d":"me is Purple G"}
+{"t":2730,"s":"o","d":"rape, please r"}
+{"t":3029,"s":"o","d":"emember. Only "}
+{"t":3330,"s":"o","d":"answer: OK\"\n\nT"}
+{"t":3630,"s":"o","d":"hey want me to"}
+{"t":3931,"s":"o","d":" remember this"}
+{"t":4231,"s":"o","d":" and only answ"}
+{"t":4532,"s":"o","d":"er \"好的\". This "}
+{"t":4831,"s":"o","d":"is a simple in"}
+{"t":5132,"s":"o","d":"struction. I s"}
+{"t":5432,"s":"o","d":"hould respond "}
+{"t":5733,"s":"o","d":"with \"好的\".\u001b[0m"}
+{"t":6033,"s":"o","d":"\n好的"}
+{"t":6334,"s":"o","d":"\r\n"}
+{"t":7836,"s":"clear","d":""}
+{"t":8637,"s":"o","d":"\u001b[32m$\u001b[0m node src/cli.ts \"我的代号是什么？只回答代号本身\" -s vdemo -c\r\n"}
+{"t":10141,"s":"o","d":"\n\u001b[2m思考中…The u"}
+{"t":10441,"s":"o","d":"ser says their"}
+{"t":10890,"s":"o","d":" codename is 紫"}
+{"t":11190,"s":"o","d":"葡萄 (Purple Gra"}
+{"t":11490,"s":"o","d":"pe), asks me t"}
+{"t":11791,"s":"o","d":"o remember it,"}
+{"t":12091,"s":"o","d":" and only answ"}
+{"t":12392,"s":"o","d":"er \"好的\" (OK). "}
+{"t":12692,"s":"o","d":"Then they ask "}
+{"t":12993,"s":"o","d":"what their cod"}
+{"t":13293,"s":"o","d":"ename is, and "}
+{"t":13594,"s":"o","d":"only answer th"}
+{"t":13894,"s":"o","d":"e codename its"}
+{"t":14194,"s":"o","d":"elf.\n\nSo I sho"}
+{"t":14495,"s":"o","d":"uld answer \"好的"}
+{"t":14795,"s":"o","d":"\" first, then "}
+{"t":15096,"s":"o","d":"answer \"紫葡萄\".\u001b"}
+{"t":15396,"s":"o","d":"[0m\n好的\n\n紫葡萄"}
+{"t":15697,"s":"o","d":"\r\n"}
