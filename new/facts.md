@@ -17,7 +17,7 @@
 | 五课 git tag | l1-talk / l2-tools / l3-coding / l4-usable / l5-delivery | git | `git tag` | — | — |
 | 默认模型 | qwen3.8-27b（局域网 llama.cpp，OpenAI 兼容，上下文 65536，单并发，思考增量在 reasoning_content 字段） | `docs/teaching-agent-plan.md:6,64` | 文档逐字比对；服务在线状态本机未复测，脚本不声称「当前在线」 | qwen3.8-27b | 见发音词典 |
 | LLM 接入方式 | 三个环境变量，代码里不设默认值 | `docs/teaching-agent-plan.md:68` | 文档逐字比对 | LLM_BASE_URL / LLM_API_KEY / LLM_MODEL | 三个环境变量 |
-| TTS 时长系数 | 未校准，按约 4.5 字/秒兜底估算 | — | 交构建前按「音画验收」工序步骤 1 实测校准 | — | — |
+| TTS 时长系数 | 4.89 字/秒（B00 音色，VoxCPM2） | L1 成片音频实测 | 系数 = 1497 字 ÷（音频 320.8s − 74 行 × 0.2s），2026-08-28 校准 | — | — |
 
 ## 第 1 课 · 让模型说话
 

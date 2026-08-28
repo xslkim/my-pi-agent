@@ -131,6 +131,6 @@
 
 - slug（全小写显式声明）：`my-pi-agent-l1-talk` / `my-pi-agent-l2-tools` / `my-pi-agent-l3-coding` / `my-pi-agent-l4-usable` / `my-pi-agent-l5-delivery`
 - `voiceRef: ../B00.wav`（相对各集 meta.md）；aspect 16:9、theme dark-code、fps 30
-- 时长系数未校准，估算按约 4.5 字/秒兜底；交构建前按「音画验收」工序步骤 1 实测校准
+- 时长系数已实测校准：4.89 字/秒（B00 音色，2026-08-28 校准，见 `facts.md`）；早期估算曾按约 4.5 字/秒兜底
 - 敏感信息：内网地址、token、真实用户名一律不进脚本；脚本只出现环境变量名
 - 每集结构固定件：B01 开场定位（做什么、从哪个 tag 接着做）→ 中段 → pi 对照 → 收束 + 下一集钩子（L5 以全系列收束 + 延伸阅读替代）
