@@ -32,6 +32,7 @@
 | 素材 curl-sse.mp4 | 22.4s（curl 打端点看原始 SSE 字节流，2026-08-28 重录） | `new/lesson1-talk/assets/curl-sse.mp4` | `ffprobe` 实测 22.400s | — | — |
 | 素材 talk-demo.mp4 | 26.1s（`node src/cli.ts` 提问，思考与正文逐字流出，2026-08-28 重录） | `new/lesson1-talk/assets/talk-demo.mp4` | `ffprobe` 实测 26.133s | — | — |
 | 素材 pi-scroll.mp4 | 41.2s（pi `openai-completions.ts` 源码滚动，2026-08-28 自 pi @086c32e 重渲染，行 1–1200 步长 3） | `new/lesson1-talk/assets/pi-scroll.mp4` | `ffprobe` 实测 41.233s | — | — |
+| fake-llm 测试教具 | 本地假模型服务器，按脚本回放 SSE 字节流，离线复现真实网络的任意分片（事件切半、多字节字符截断）——真模型故障不可按需复现，测试用回放注入 | `test/fake-llm.ts` 头注释；`test/llm.test.ts` | 逐字比对头注释；测试用例名比对 | fake-llm | fake L L M |
 
 ## 第 2 课 · 让模型动手
 

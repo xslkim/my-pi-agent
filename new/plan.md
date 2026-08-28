@@ -5,7 +5,7 @@
 
 ## 一、系列目标契约
 
-- **受众**：写过 TypeScript、日常用命令行的程序员 / CS 学生——默认他会读代码、懂 HTTP 基础、没写过 agent。
+- **受众**：写过 TypeScript、日常用命令行的程序员 / CS 学生，没写过 agent。**既有知识清单**（旁白免交代直接使用）：TypeScript 语法、命令行与 curl、环境变量、HTTP 请求/响应/状态码、JSON。**不属既有知识**（旁白首现须一句白话交代）：SSE 流式协议与事件结构、delta 增量、TCP 分包行为、llama.cpp 与部署拓扑、agent 领域概念（tool_calls、agent loop、REPL、上下文预算等）。
 - **看完获得**：能从零写出一个 1106 行、零运行时依赖的 coding agent，并讲清每一层——SSE 客户端 → 工具调用与 agent loop → 四个改码工具 → CLI 加固 → 真实交付——为什么这样写。
 - **不讲**（范围护栏）：不接云 API、不讲 40 家 provider 兼容、不 import pi（只读对照）、不造构建工具链、不教前端框架。
 - **跟练前置**：Node ≥ 23.6（22.x 加 `--experimental-strip-types`）、零 npm 依赖、一个 OpenAI 兼容端点（`LLM_BASE_URL` / `LLM_API_KEY` / `LLM_MODEL` 三个环境变量）。
@@ -15,7 +15,7 @@
 
 | 集 | 一句话目标（能力台阶） | 入口状态 | 为什么排在上一集之后 |
 |---|---|---|---|
-| L1 让模型说话 | 手写 SSE 客户端，终端流式看到回答与思考 | 空仓库；既有知识：TS、命令行、HTTP 基础 | 一切从协议字节开始，后四集都站在这个客户端上 |
+| L1 让模型说话 | 手写 SSE 客户端，终端流式看到回答与思考 | 空仓库；既有知识见 §一清单；本集新教：SSE 协议、delta.content、reasoning_content、TCP 事件边界、跨 chunk 缓冲区 | 一切从协议字节开始，后四集都站在这个客户端上 |
 | L2 让模型动手 | 手写 tool calling 与 agent loop，模型调工具再据结果继续 | 从 `l1-talk` 出发；前置：L1 的 SSE 解析 | 工具调用是协议层的第二类增量；loop 是会说话之后的自然下一步 |
 | L3 让 agent 改代码 | read / write / edit / bash 四个受约束工具 + guard | 从 `l2-tools` 出发；前置：Tool 接口与 loop | 有了 loop 才挂得上工具；四个工具是同一接口的插件 |
 | L4 让 agent 好用 | REPL、中止、会话持久化、上下文预算、重试 | 从 `l3-coding` 出发 | 能改代码才值得天天用；五项加固挂在已有 loop 上，不引入新机制层 |
@@ -42,7 +42,7 @@
 | B09 | 修法：跨 chunk 缓冲区，切完留尾、下块再拼 | animation/CodeBlock |
 | B10 | 代码走读：`llm.ts` 78 行 @l1-talk 的主循环 | CodeBlock |
 | B11 | 演示：`node src/cli.ts "你好"`，回答与思考逐字流出 | video(./assets/talk-demo.mp4) |
-| B12 | 教具：fake-llm 回放字节流，110 个测试断网通过 | html 卡片 |
+| B12 | 教具：fake-llm 回放字节流，110 个测试断网通过——真模型故障不可按需复现，测试必须断网可重放 | html 卡片 |
 | B13 | pi 对照 + 钩子：78 行 vs 1577 行，差的是 40 家 provider；下集让模型动手 | video(./assets/pi-scroll.mp4) |
 
 ### L2 让模型动手（11 块，粗估约 5.5 分钟）

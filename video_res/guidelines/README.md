@@ -19,3 +19,4 @@
 - 脚本格式规范以 AutoVideo 的 `docs/AUTHORING.md`（本机 `/home/xsl/AutoVideo/docs/AUTHORING.md`）为准。
 - 五份文档的「通用底线」节逐字一致；改底线必须五处同步，改完跑 `./check-baseline.sh` 校验。
 - `REVIEW-20260827.md` 是本套方案的评审存档，文中的 01–05 编号是重命名前的旧文件名（01=目标契约、02=受众画像、03=事实基线、04=单块设计、05=音画验收）。
+- 验收时两道并过：`process-av-acceptance.md` 步骤 3 的通用清单 + 本系列自己的清单副本（系列目录下 `acceptance-checklist.md`，按该文步骤 5 回写维护）；术语首现表随契约存 plan.md，验收时对照旁白逐行回查。
