@@ -9,3 +9,6 @@ run2 => run 二
 T23 => T 二十三
 docs/specs => docs specs
 docs/lessons => docs lessons
+node:http => node http
+node:sqlite => node S Q Lite
+scrypt => S crypt

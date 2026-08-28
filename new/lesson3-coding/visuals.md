@@ -112,7 +112,7 @@ const numbered = slice.map((line, i) => `${start + i + 1}| ${line}`).join("\n");
 return truncate(numbered); // 输出截断，来自 guard.ts
 ```
 
-高亮跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：第 2 行旁白讲 offset / limit 时，高亮 parameters 里 offset 与 limit 两行；第 3 行讲截断时，高亮最后一行 return truncate(numbered)；第 4、5 行讲 5MB 与 64K 时，truncate 那一行保持高亮并在其右侧浮现标签「不截断 → 5MB 文件炸掉 64K 上下文」（红色 #f85149，字号 28px）；其余行正常亮度，行切换时平滑过渡。
+高亮跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：第 2 行旁白讲 offset / limit 时，高亮 parameters 里 offset 与 limit 两行；第 3 行讲截断时，高亮最后一行 return truncate(numbered)；第 5、6 行讲 5MB 与 64K 时，truncate 那一行保持高亮并在其右侧浮现标签「不截断 → 5MB 文件炸掉 64K 上下文」（红色 #f85149，字号 28px）；其余行正常亮度，行切换时平滑过渡。
 
 
 >>> edit：old_string 必须唯一 #B04
@@ -329,7 +329,7 @@ Rules:
 - Explain what you changed after you finish.
 ```
 
-高亮跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：第 3 行旁白讲规则时，逐条高亮 Rules 下的每一条规则行（讲到哪条亮哪条）；第 5 行讲「prompt 里说的每一条，代码里都必须真的强制」时，全部规则行保持高亮，并在面板右下角浮现对应关系小字「resolveInside / truncate / 唯一匹配」（颜色 #58a6ff，字号 26px），行切换时平滑过渡。
+高亮跟随旁白推进（用 props.lineTimings 驱动，不要硬编码时间戳）：第 3 行旁白讲规则时，逐条高亮 Rules 下的每一条规则行（讲到哪条亮哪条）；第 5 行讲「提示词说的每一条，代码里都必须真的强制」时，全部规则行保持高亮，并在面板右下角浮现对应关系小字「resolveInside / truncate / 唯一匹配」（颜色 #58a6ff，字号 26px），行切换时平滑过渡。
 
 
 >>> 演示：agent 改 hello.js #B10

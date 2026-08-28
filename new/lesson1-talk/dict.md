@@ -7,3 +7,4 @@ delta.content => delta 点 content
 reasoning_content => reasoning content
 qwen3.8-27b => qwen 三点八 二十七 B
 fake-llm => fake L L M
+llama.cpp => 拉马 点 C P P

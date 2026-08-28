@@ -60,7 +60,7 @@ L1 是本集，卡片用 accent 色 #58a6ff 描边并轻微发光。
 </style>
 </head>
 <body>
-  <div class="title">环境基线 · <span class="accent">只有三条</span></div>
+  <div class="title">动手之前 · <span class="accent">三个条件</span></div>
   <div class="row">
     <div class="card">
       <div class="tag">① 运行时</div>
@@ -80,7 +80,7 @@ L1 是本集，卡片用 accent 色 #58a6ff 描边并轻微发光。
       <div class="note">代码里不设默认值</div>
     </div>
   </div>
-  <div class="foot">三条都满足，就可以开始写代码了</div>
+  <div class="foot">三个条件都满足，就可以开始写代码了</div>
 </body>
 </html>
 
@@ -282,7 +282,7 @@ print(delta.reasoning_content);            // 思考增量
 </style>
 </head>
 <body>
-  <div class="title">教具：<span class="accent mono">fake-llm</span> · 断网也能测</div>
+  <div class="title">测试工具：<span class="accent mono">fake-llm</span> · 断网也能测</div>
   <div class="row">
     <div class="card tool">
       <div class="tag">它做什么</div>
@@ -296,7 +296,7 @@ print(delta.reasoning_content);            // 思考增量
       <div class="passnote">✔ node --test 全绿 · 全程断网</div>
     </div>
   </div>
-  <div class="foot">教具和实现一样重要</div>
+  <div class="foot">测试工具和实现一样重要</div>
 </body>
 </html>
 
